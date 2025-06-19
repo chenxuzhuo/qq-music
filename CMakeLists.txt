@@ -14,7 +14,12 @@ qt_add_executable(appQQMusic
 qt_add_qml_module(appQQMusic
     URI QQMusic
     VERSION 1.0
-    QML_FILES main.qml 
+    QML_FILES main.qml
+    RESOURCES source.qrc
+    QML_FILES Player.qml
+    QML_FILES MoveSlider.qml
+    QML_FILES Qbottom.qml
+    QML_FILES Volume.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

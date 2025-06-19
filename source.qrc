@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/order.png</file>
+        <file>image/love.png</file>
+        <file>image/device off.png</file>
+        <file>image/敏感词.png</file>
+        <file>image/更多1.png</file>
+        <file>image/更多.png</file>
+        <file>image/标准.png</file>
+        <file>image/15.jpg</file>
+    </qresource>
+</RCC>
