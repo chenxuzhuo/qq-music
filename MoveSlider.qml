@@ -4,61 +4,78 @@ import QtQuick.Layouts
 import QtMultimedia
 
 Item {
-    property alias row:_row
+    property alias row: _row
 
-    RowLayout{
-        id:_row
+    RowLayout {
+        id: _row
         spacing: 15
-        Layout.fillWidth: true  // 关键修改：允许行填充宽度
+        Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
 
-        Text{
-            id:timeText
-            text: play.formatTime(player.position)
-            font.pixelSize: 12
-            Layout.preferredWidth: 30  // 添加固定宽度
+        Label {
+            text: currentPlayingPath ? formatFilePath(currentPlayingPath) : ""
+            elide: Text.ElideMiddle
+            Layout.preferredWidth: 200
+            font.bold: true
+            color: "blue"
         }
 
-        Slider{
-            id:sliders
+        Text {
+            id: timeText
+            text: formatTime(player.position)
+            font.pixelSize: 12
+            Layout.preferredWidth: 30
+        }
 
-            height:25
+        Slider {
+            id: progressSlider
             from: 0
             to: player.duration
             value: player.position
+            enabled: player.seekable
+            onMoved: player.position = value
+            Layout.fillWidth: true
 
-            MouseArea {
-                anchors.fill: parent
-                drag.target: sliders
-                drag.axis: Drag.XAxis
-                drag.threshold: 0
-                propagateComposedEvents: true
+            /*id: sliders
+            height: 25
+            from: 0
+            to: player.duration
+            value: player.position
+            live: true  // 关键：启用实时更新
 
-                // 修改点1：移除暂停逻辑
-                onPressed: (mouse) => {
-                    updateTimer.stop()  // 仅停止自动更新
-                    mouse.accepted = false
-                }
-
-                onReleased: (mouse) => {
-                    player.position = slider.value
+            // 处理按压状态
+            onPressedChanged: {
+                if (pressed) {
+                    updateTimer.stop()
+                } else {
+                    player.position = value
                     updateTimer.start()
-                    mouse.accepted = false
+                }
+            }
+
+            // 处理点击跳转（Qt 5.15+）
+            onMoved: {
+                if (!pressed) {  // 处理点击事件
+                    player.position = value
                 }
             }
 
             // 实时更新处理
-            onValueChanged: {
-                if (pressed) {
-                    player.position = value
+            Connections {
+                target: player
+                function onPositionChanged() {
+                    if (!progressSlider.pressed) {
+                        progressSlider.value = player.position
+                    }
                 }
-            }
+            }*/
         }
-        Label{
-            id:text
-            text:play.formatTime(player.duration)
+
+        Label {
+            id: text
+            text: formatTime(player.duration)
             font.pixelSize: 12
-            Layout.preferredWidth: 30   // 添加固定宽度
+            Layout.preferredWidth: 30
         }
 
         Timer {
@@ -67,16 +84,27 @@ Item {
             repeat: true
             running: true
             onTriggered: {
-                if (!sliders.pressed) {
-                    sliders.value = player.position
+                if (!progressSlider.pressed) {
+                    progressSlider.value = player.position
                 }
             }
         }
-        function formatTime(millis) {
-            const seconds = Math.floor(millis / 1000)
-            const minutes = Math.floor(seconds / 60)
-            const secs = seconds % 60
-            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-        }
     }
+
+    function formatTime(millis) {
+        const seconds = Math.floor(millis / 1000)
+        const minutes = Math.floor(seconds / 60)
+        const secs = seconds % 60
+        return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+    }
+
+    function formatFilePath(path) {
+        return path.toString().replace("file://", "").replace(/^.*\//, "")
+    }
+
+    // function formatTime(ms) {
+    //     const sec = Math.floor(ms / 1000)
+    //     return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
+    // }
 }
+

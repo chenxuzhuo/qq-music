@@ -3,10 +3,21 @@
         <file>image/order.png</file>
         <file>image/love.png</file>
         <file>image/device off.png</file>
-        <file>image/敏感词.png</file>
-        <file>image/更多1.png</file>
-        <file>image/更多.png</file>
-        <file>image/标准.png</file>
+        <file>image/word.png</file>
+        <file>image/more1.png</file>
+        <file>image/more.png</file>
+        <file>image/standard.png</file>
         <file>image/15.jpg</file>
+        <file>image/export-down.png</file>
+        <file>image/repl.png</file>
+        <file>image/game.png</file>
+        <file>image/first.png</file>
+        <file>image/list.png</file>
+        <file>image/setting.png</file>
+        <file>image/skin.png</file>
+        <file>image/music.png</file>
+        <file>image/04.jpg</file>
+        <file>image/next.png</file>
+        <file>image/plus.png</file>
     </qresource>
 </RCC>
