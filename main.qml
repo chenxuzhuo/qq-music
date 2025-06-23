@@ -1,9 +1,14 @@
 //A front-end about QQ music
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Shapes
+import Qt.labs.folderlistmodel
+import QtMultimedia
 
 Window {
+    //id: root
     id: window
     width: 1317
     height: 933
@@ -12,82 +17,314 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.window | Qt.WindowSystemmenuHint |
            Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint
 
-    // 窗口拖动
-    MouseArea {
-        anchors.fill: parent
-        property point clickPos: Qt.point(0, 0)
-
-        // 捕捉鼠标按下事件
-        onPressed: function(mouse) {
-            clickPos = Qt.point(mouse.x, mouse.y)
-        }
-
-        // 捕捉鼠标位置变化事件
-        onPositionChanged: function(mouse) {
-            let delta = Qt.point(mouse.x - clickPos.x, mouse.y - clickPos.y)
-            window.x += delta.x
-            window.y += delta.y
-        }
-    }
-
-    //三个主要窗口
-    Rectangle {
-        id: leftRect
-
-        width: 250
-
+    // 窗口拖动区域
+    Item {
+        id: dragArea
         anchors.top: parent.top
-        anchors.right: rightRect.left
         anchors.left: parent.left
-        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        height: 40  // 顶部拖拽区域高度
 
-        color: "#FFFFFF"
+        HoverHandler {
+            cursorShape: Qt.SizeAllCursor
+        }
+
+        DragHandler {
+            target: null
+            onActiveChanged: if (active) window.startSystemMove()
+        }
     }
 
-    Rectangle {
-        id: rightRect
+    property var mp3Files: []
+    property string currentPlayingPath: ""
+    property bool isPlaying: false
+    property int playMode: 0
+    property bool listExpanded: true
 
-        height: 800
+    // 播放模式图标路径
+    property var playModeIcons: [
+        "file:///root/musicfunction/list/image/order.png",
+        "file:///root/musicfunction/list/image/random.png",
+        "file:///root/musicfunction/list/image/circal.png"
+    ]
 
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.left: leftRect.right
-        anchors.bottom: bottomRect.top
+    MediaPlayer {
+        id: player
+        audioOutput: audiooutput
 
-        color: "#2C2C2C"
+        onPlaybackStateChanged: {
+                isPlaying = (playbackState === MediaPlayer.PlayingState)
+                //playButton.icon.name = isPlaying ? "media-playback-pause" : "media-playback-start"
 
-        Rectangle{
-            anchors.left:parent.left
-            anchors.right:parent.right
-            anchors.top:parent.top
-            height:60
-            RowLayout{
-                anchors.right:parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.rightMargin: 0.02*window.width
-                spacing:15
-                Button {
-                    id: exitButton
-                    icon.name: "dialog-error"
-                    width: 32
-                    height: 32
-                    onClicked: {
-                        console.log("Exiting...")  // 调试输出
-                        Qt.quit()
+                // // 检测播放结束
+                // if (playbackState === MediaPlayer.StoppedState && player.position >= player.duration - 100) {
+                //     autoPlayNext()
+                // }
+
+            // 检测播放结束
+                    if (playbackState === MediaPlayer.StoppedState &&
+                        player.duration > 0 &&
+                        Math.abs(player.position - player.duration) < 100) {
+                        autoPlayNext()
                     }
-                }
+            }
+
+        onErrorOccurred: console.error("播放错误:", errorString)
+    }
+
+    AudioOutput {
+        id: audiooutput
+        volume: 0.5
+    }
+
+    RowLayout {
+        anchors.fill: parent
+        spacing: 10
+
+        Item {
+            id: leftContainer
+            Layout.preferredWidth: 250  // 固定宽度
+            Layout.fillHeight: true
+            Left {
+                id: leftPanel
+                width: parent.width - 40  // 减去边距
+                height: parent.height - 40  // 减去边距
+                anchors.centerIn: parent
+                listExpanded: window.listExpanded
+                onToggleList: window.listExpanded = !window.listExpanded
+            }
+        }
+
+        // 主内容区域
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 5
+
+            Right {
+                id: rightPanel
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                folderModel: folderModel
+                currentPlayingPath: window.currentPlayingPath
+                isPlaying: window.isPlaying
+                listExpanded: window.listExpanded
+                onPlayMusic: (filePath) => window.playMusic(filePath)
+
+                Layout.preferredHeight: listExpanded ? implicitHeight : 0
+            }
+
+            Qbottom {
+                Layout.fillWidth: true
+                height:150
+                player: player
+                currentPlayingPath: window.currentPlayingPath
+                playMode: window.playMode
+                playModeIcons: window.playModeIcons
+                onPlayNext: window.playNext()
+                onPlayPrevious: window.playPrevious()
+                onTogglePlayPause: window.togglePlayPause()
+                onChangePlayMode: window.playMode = (window.playMode + 1) % 3
             }
         }
     }
 
-    Qbottom {
-        id: bottomRect
+    FolderListModel {
+        id: folderModel
+        folder: "file:///root/tmp"
+        nameFilters: ["*.mp3"]
+        showDirs: false
+    }
 
-        anchors.top: rightRect.bottom
-        anchors.right: parent.right
-        anchors.left: leftRect.right
-        anchors.bottom: parent.bottom
+    // 工具函数
+    function formatFilePath(path) {
+        return path.toString().replace("file://", "").replace(/^.*\//, "")
+    }
+
+    function playMusic(filePath, keepPlaying = false) {
+        const normalizedPath = filePath.toString().replace("file://", "");
+            const currentNormalized = currentPlayingPath.replace("file://", "");
+
+            if (currentNormalized === normalizedPath) {
+                togglePlayPause();
+                return;
+            }
+
+            player.stop();
+            player.source = "file://" + normalizedPath;
+            currentPlayingPath = normalizedPath;
+
+            if (keepPlaying || isPlaying) {
+                player.play();
+            }
+    }
+
+    function togglePlayPause() {
+        player.playbackState === MediaPlayer.PlayingState ? player.pause() : player.play()
+    }
+
+
+    function autoPlayNext() {
+        if (folderModel.count === 0) return
+
+        switch(playMode) {
+        case 0: // 顺序播放
+            playNext()
+            break
+        case 1: // 随机播放
+            playRandom()
+            break
+        case 2: // 单曲循环
+            replayCurrent()
+            break
+        }
+    }
+
+    function playRandom() {
+        if (folderModel.count === 0) return
+
+        let newIndex
+        let currentIndex = getCurrentIndex()
+
+        // 确保不重复播放同一首歌（除非只有一首）
+        do {
+            newIndex = Math.floor(Math.random() * folderModel.count)
+        } while (newIndex === currentIndex && folderModel.count > 1)
+
+        playMusic(folderModel.get(newIndex, "filePath"), true)
+    }
+
+    function replayCurrent() {
+        if (currentPlayingPath) {
+            player.position = 0
+            player.play()
+        }
+    }
+
+    function getCurrentIndex() {
+        if (folderModel.count === 0) return -1
+
+        const currentNormalized = currentPlayingPath.replace("file://", "")
+        for (let i = 0; i < folderModel.count; i++) {
+            if (folderModel.get(i, "filePath").replace("file://", "") === currentNormalized) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    function playNext() {
+        if (folderModel.count === 0) return;
+
+            let currentIndex = -1;
+            const currentNormalized = currentPlayingPath.replace("file://", "");
+            for (let i = 0; i < folderModel.count; i++) {
+                if (folderModel.get(i, "filePath").replace("file://", "") === currentNormalized) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+
+            if (currentIndex === -1) currentIndex = 0;
+
+            switch(playMode) {
+            case 0: // 顺序播放
+                currentIndex = (currentIndex + 1) % folderModel.count;
+                break;
+            case 1: // 随机播放
+                // 确保不重复播放同一首歌
+                let newIndex;
+                do {
+                    newIndex = Math.floor(Math.random() * folderModel.count);
+                } while (newIndex === currentIndex && folderModel.count > 1);
+                currentIndex = newIndex;
+                break;
+            case 2: // 单曲循环
+                currentIndex = currentIndex; // 保持不变
+                break;
+            }
+
+            playMusic(folderModel.get(currentIndex, "filePath"), true);
+    }
+
+    function playPrevious() {
+        if (folderModel.count === 0) return;
+
+            // 获取当前索引（使用标准化路径比较）
+            let currentIndex = -1;
+            const currentNormalized = currentPlayingPath.replace("file://", "");
+            for (let i = 0; i < folderModel.count; i++) {
+                if (folderModel.get(i, "filePath").replace("file://", "") === currentNormalized) {
+                    currentIndex = i;
+                    break;
+                }
+            }
+
+            if (currentIndex === -1) currentIndex = folderModel.count - 1;
+
+            switch(playMode) {
+            case 0: // 顺序播放
+                currentIndex = (currentIndex - 1 + folderModel.count) % folderModel.count;
+                playMusic(folderModel.get(currentIndex, "filePath"), true);
+                break;
+            case 1: // 随机播放
+                currentIndex = Math.floor(Math.random() * folderModel.count);
+                playMusic(folderModel.get(currentIndex, "filePath"), true);
+                break;
+            case 2: // 单曲循环
+                if (currentPlayingPath) {
+                    playMusic(currentPlayingPath, true);
+                }
+                break;
+            }
+    }
+
+    function addToSelectedFiles(name, path) {
+        if (!mp3Files.some(f => f.path === path)) {
+            mp3Files.push({name, path})
+            mp3FilesChanged()
+        }
+    }
+
+    function formatTime(ms) {
+        const sec = Math.floor(ms / 1000)
+        return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
+    }
+
+    function playDefaultMusic() {
+        const defaultPath = "file:///root/tmp/Go_Beyond_Andy.mp3"
+        for (let i = 0; i < folderModel.count; i++) {
+            if (folderModel.get(i, "filePath") === defaultPath) {
+                playMusic(defaultPath, true)
+                return
+            }
+        }
+        if (folderModel.count > 0) {
+            playMusic(folderModel.get(0, "filePath"), true)
+        }
+    }
+
+    Component.onCompleted: {
+        //确保有一首歌在程序启动时播放
+        folderModel.statusChanged.connect(function() {
+            if (folderModel.status === FolderListModel.Ready && folderModel.count > 0) {
+                // 查找默认歌曲
+                const defaultSong = "Go_Beyond_Andy.mp3";
+                let foundIndex = -1;
+
+                for (let i = 0; i < folderModel.count; i++) {
+                    const fileName = folderModel.get(i, "fileName");
+                    if (fileName === defaultSong) {
+                        foundIndex = i;
+                        break;
+                    }
+                }
+
+                // 播放找到的歌曲或第一首
+                const playIndex = foundIndex >= 0 ? foundIndex : 0;
+                playMusic(folderModel.get(playIndex, "filePath"), true);
+                player.stop();
+            }
+        });
     }
 }
-
-

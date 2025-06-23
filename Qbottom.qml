@@ -1,30 +1,25 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.folderlistmodel
 import QtMultimedia
+import Qt.labs.platform   // 文件对话框需要
 
 Rectangle {
 
     id: bottomRect
-
-    // 媒体播放器
-    MediaPlayer {
-        id: player
-        source: "file:///root/tmp/海阔天空.mp3"
-
-        audioOutput: audiooutput
-    }
-
-    AudioOutput{
-            id:audiooutput
-            volume:0.5
-        }
-
     color: "#F5F5F5"
 
-    Player{
-        id:play
-    }
+    property MediaPlayer player
+    property AudioOutput audioOutput
+    property string currentPlayingPath
+    property int playMode
+    property var playModeIcons
+
+    signal playNext()
+    signal playPrevious()
+    signal togglePlayPause()
+    signal changePlayMode()
 
     RowLayout{
         anchors.fill:parent
@@ -54,47 +49,61 @@ Rectangle {
                         sourceSize: Qt.size(20,20)
                     }
                     Image{
-                        source: "file:///root/qq-music/image/更多1.png"
+                        source: "file:///root/qq-music/image/more1.png"
                         sourceSize: Qt.size(20,20)
                     }
             }
         }
         Item{
-            width: 44
+            width: 30
             height:44
+        }
+
+        function formatFilePath(path) {
+            return path.toString().replace("file://", "").replace(/^.*\//, "")
+        }
+
+        function formatTime(ms) {
+            const sec = Math.floor(ms / 1000)
+            return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
         }
 
         ColumnLayout{
             RowLayout{
                 spacing:30
                 Layout.preferredWidth:row.width
-                Button{
-                    Layout.preferredWidth:50
-                    icon.name:"system-reboot"
-                    icon.width:20
-                    icon.height:20
+
+                // 播放模式切换按钮
+                // 播放模式按钮
+                Button {
+                    id: modeButton
+                    icon.source: playModeIcons[playMode]
+                    icon.width: 24
+                    icon.height: 24
+                    flat: true
+                    onClicked: changePlayMode()
+                    ToolTip.text: ["顺序播放", "随机播放", "单曲循环"][playMode]
+                    ToolTip.visible: hovered
                 }
+
                 Button{
                     Layout.preferredWidth:50
                     icon.name:"media-seek-backward"
                     icon.width:20
                     icon.height:20
+                    onClicked: playPrevious()
                 }
                 Button{
                     id: playButton
-                    Layout.preferredWidth:50
-                    icon.name: player.playbackState === MediaPlayer.PlayingState ? "media-playback-stop" : "media-playback-start"
-                    icon.width:20
-                    icon.height:20
-                    onClicked: {
-                        player.playbackState === MediaPlayer.PlayingState ? player.pause() : player.play()
-                    }
+                    icon.name: player.playbackState === MediaPlayer.PlayingState ? "media-playback-pause" : "media-playback-start"
+                    onClicked: player.playbackState === MediaPlayer.PlayingState ? player.pause() : player.play()
                 }
                 Button{
                     Layout.preferredWidth:50
                     icon.name:"media-seek-forward"
                     icon.width:20
                     icon.height:20
+                    onClicked: playNext()
                 }
 
                 Volume{
@@ -111,7 +120,7 @@ Rectangle {
         }
 
         Item{
-            Layout.preferredWidth:parent.width/10
+            Layout.preferredWidth:parent.width/20
             Layout.fillWidth:true
             Layout.fillHeight:true
         }
@@ -119,7 +128,7 @@ Rectangle {
         Image{
             anchors.bottomMargin: 10
             Layout.preferredWidth:50
-            source:"file:///root/qq-music/image/标准.png"
+            source:"file:///root/qq-music/image/standard.png"
             sourceSize: Qt.size(44,44)
 
         }
@@ -134,7 +143,7 @@ Rectangle {
         Image{
             anchors.bottomMargin: 10
             Layout.preferredWidth:50
-            source:"file:///root/qq-music/image/敏感词.png"
+            source:"file:///root/qq-music/image/word.png"
             sourceSize: Qt.size(44,44)
 
         }
@@ -142,13 +151,13 @@ Rectangle {
         Image{
             anchors.bottomMargin: 10
             Layout.preferredWidth:50
-            source:"file:///root/qq-music/image/更多.png"
+            source:"file:///root/qq-music/image/more.png"
             sourceSize: Qt.size(44,44)
 
         }
 
         Item{
-            Layout.preferredWidth:parent.width/10
+            Layout.preferredWidth:20
             Layout.fillWidth:true
             Layout.fillHeight:true
         }

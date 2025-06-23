@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/">
+        <file>build/C_C_2025_06_16-Debug/image/word.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/toupin.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/standard.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/skin.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/setting.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/search.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/order.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/next.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/musical-note.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/music.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/more1.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/more.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/right.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/repl.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/redom.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/qqmusic.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/plus.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/love.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/loop.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/list.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/let.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/game.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/first.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/export-down.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/device off.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/close.png</file>
+        <file>build/C_C_2025_06_16-Debug/image/15.jpg</file>
+        <file>build/C_C_2025_06_16-Debug/image/04.jpg</file>
+    </qresource>
+</RCC>

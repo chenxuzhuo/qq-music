@@ -1,0 +1,14 @@
+-rootPath
+/root/qq-music
+-cmake-output
+-output-file
+/root/QQMusic/build/C_C_2025_06_16-Debug/.qt_plugins/Qt6_QmlPlugins_Imports_appQQMusic.cmake
+-importPath
+/root/QQMusic/build/C_C_2025_06_16-Debug/QQMusic
+-importPath
+/root/QQMusic/build/C_C_2025_06_16-Debug
+-importPath
+/usr/lib/qt6/qml
+-qrcFiles
+/root/QQMusic/build/C_C_2025_06_16-Debug/.rcc/qmake_QQMusic.qrc
+/root/QQMusic/build/C_C_2025_06_16-Debug/.rcc/appQQMusic_raw_qml_0.qrc
