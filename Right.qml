@@ -8,10 +8,6 @@ import Qt.labs.platform   // 文件对话框需要
 Rectangle {
     id: rightRect
     height: 800
-    // anchors.top: parent.top
-    // anchors.right: parent.right
-    // anchors.left: leftRect.right
-    // anchors.bottom: bottomRect.top
     color: "#2C2C2C"
 
     implicitHeight: listExpanded ? Math.min(fileListView.contentHeight + 20, 300) : 0
@@ -89,13 +85,6 @@ Rectangle {
                 anchors.fill: parent
                 anchors.margins: 10
                 spacing: 15
-
-                // Image {
-                //     source: currentPlayingPath === filePath && isPlaying ?
-                //            "qrc:/icons/playing-icon.png" : "qrc:/icons/music-icon.png"
-                //     width: 30
-                //     height: 30
-                // }
 
                 ColumnLayout {
                     spacing: 5

@@ -21,53 +21,6 @@ Rectangle {
     signal togglePlayPause()
     signal changePlayMode()
 
-    /*property bool isPlaying: false  // 组件级属性声明
-    property var mp3Files: []
-    property string currentPlayingPath: ""
-    property int playMode: 0
-    property bool listExpanded: true
-    // 播放模式图标路径
-    property var playModeIcons: [
-        "file:///root/musicfunction/list/image/order.png",
-        "file:///root/musicfunction/list/image/random.png",
-        "file:///root/musicfunction/list/image/circal.png"
-    ]*/
-
-    // 媒体播放器声明提升到Window作用域
-    /*MediaPlayer {
-        id: player
-        audioOutput: AudioOutput {
-            id: audioOutput
-            volume: 0.5
-        }
-        onPlaybackStateChanged: {
-            isPlaying = (playbackState === MediaPlayer.PlayingState)
-            playButton.icon.name = isPlaying ? "media-playback-pause" : "media-playback-start"
-        }
-    }*/
-
-
-    // 媒体播放器
-    /*MediaPlayer {
-
-        id: player
-        audioOutput: AudioOutput {
-            id: audioOutput
-            volume: 0.5
-        }
-
-        onPlaybackStateChanged: {
-            isPlaying = (playbackState === MediaPlayer.PlayingState)
-            playButton.icon.name = isPlaying ? "media-playback-pause" : "media-playback-start"
-        }
-        onErrorOccurred: console.error("播放错误:", errorString)
-    }*/
-
-
-    // Player{
-    //     id:play
-    // }
-
     RowLayout{
         anchors.fill:parent
         anchors.leftMargin:0.02*window.width

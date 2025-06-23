@@ -8,19 +8,13 @@ import QtQuick.Shapes
 //三个主要窗口
 Rectangle {
     id: leftRect
-        width: 450  // 固定宽度
-        anchors {
-            top: parent.top
-            bottom: parent.bottom
-            left: parent.left
-            margins: 20
-        }
-        color: "#FFFFFF"
+    width: parent.width
+    height: parent.height
+    color: "#FFFFFF"
 
-        // 接收外部传递的展开状态
-        property bool listExpanded: true
-        signal toggleList()  // 声明切换信号
-
+    // 接收外部传递的展开状态
+    property bool listExpanded: true
+    signal toggleList()  // 声明切换信号
 
     ColumnLayout{
         spacing:30
@@ -141,12 +135,6 @@ Rectangle {
             text: listExpanded ? "▼ 隐藏列表" : "▶ 显示列表"
             onClicked: toggleList()  // 触发切换信号
             Layout.fillWidth: true
-
-            // 添加视觉反馈
-            background: Rectangle {
-                color: control.hovered ? "#e0e0e0" : "transparent"
-                radius: 4
-            }
         }
     }
 }

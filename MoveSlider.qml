@@ -101,10 +101,5 @@ Item {
     function formatFilePath(path) {
         return path.toString().replace("file://", "").replace(/^.*\//, "")
     }
-
-    // function formatTime(ms) {
-    //     const sec = Math.floor(ms / 1000)
-    //     return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
-    // }
 }
 
