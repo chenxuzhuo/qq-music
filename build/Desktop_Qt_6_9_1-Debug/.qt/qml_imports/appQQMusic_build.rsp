@@ -1,0 +1,14 @@
+-rootPath
+/root/qq-music
+-cmake-output
+-output-file
+/root/qq-music/build/Desktop_Qt_6_9_1-Debug/.qt/qml_imports/appQQMusic_build.cmake
+-importPath
+/root/qq-music/build/Desktop_Qt_6_9_1-Debug/QQMusic
+-importPath
+/root/qq-music/build/Desktop_Qt_6_9_1-Debug
+-importPath
+/root/qt/Qt/6.9.1/gcc_64/qml
+-qrcFiles
+/root/qq-music/build/Desktop_Qt_6_9_1-Debug/.qt/rcc/qmake_QQMusic.qrc
+/root/qq-music/build/Desktop_Qt_6_9_1-Debug/.qt/rcc/appQQMusic_raw_qml_0.qrc

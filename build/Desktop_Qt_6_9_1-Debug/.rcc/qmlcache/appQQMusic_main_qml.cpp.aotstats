@@ -1,0 +1,380 @@
+[
+    {
+        "moduleFiles": [
+            {
+                "entries": [
+                    {
+                        "codegenSuccessful": false,
+                        "column": 12,
+                        "durationMicroseconds": 194,
+                        "errorMessage": "Cannot load property window from QtObject.",
+                        "functionName": "flags",
+                        "line": 17
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 28,
+                        "durationMicroseconds": 113,
+                        "errorMessage": "Cannot generate efficient code for storing an array in a non-sequence type",
+                        "functionName": "mp3Files",
+                        "line": 38
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 33,
+                        "durationMicroseconds": 166,
+                        "errorMessage": "Cannot generate efficient code for storing an array in a non-sequence type",
+                        "functionName": "playModeIcons",
+                        "line": 45
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 0,
+                        "errorMessage": "Functions without type annotations won't be compiled",
+                        "functionName": "formatFilePath",
+                        "line": 140
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 0,
+                        "errorMessage": "Functions without type annotations won't be compiled",
+                        "functionName": "playMusic",
+                        "line": 144
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 5,
+                        "durationMicroseconds": 292,
+                        "errorMessage": "",
+                        "functionName": "togglePlayPause",
+                        "line": 162
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 5,
+                        "durationMicroseconds": 353,
+                        "errorMessage": "",
+                        "functionName": "autoPlayNext",
+                        "line": 167
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 1026,
+                        "errorMessage": "Cannot generate efficient code for call to untyped JavaScript function",
+                        "functionName": "playRandom",
+                        "line": 183
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 5,
+                        "durationMicroseconds": 237,
+                        "errorMessage": "",
+                        "functionName": "replayCurrent",
+                        "line": 197
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 494,
+                        "errorMessage": "function without return type annotation returns int. This may prevent proper compilation to Cpp.",
+                        "functionName": "getCurrentIndex",
+                        "line": 204
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 5720,
+                        "errorMessage": "Cannot generate efficient code for call to untyped JavaScript function",
+                        "functionName": "playNext",
+                        "line": 216
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 5535,
+                        "errorMessage": "Cannot generate efficient code for call to untyped JavaScript function",
+                        "functionName": "playPrevious",
+                        "line": 250
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 0,
+                        "errorMessage": "Functions without type annotations won't be compiled",
+                        "functionName": "addToSelectedFiles",
+                        "line": 282
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 0,
+                        "errorMessage": "Functions without type annotations won't be compiled",
+                        "functionName": "formatTime",
+                        "line": 289
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 5,
+                        "durationMicroseconds": 1532,
+                        "errorMessage": "Cannot generate efficient code for comparison of non-primitive, non-object type to var",
+                        "functionName": "playDefaultMusic",
+                        "line": 294
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 22,
+                        "durationMicroseconds": 107,
+                        "errorMessage": "",
+                        "functionName": "top",
+                        "line": 23
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 23,
+                        "durationMicroseconds": 82,
+                        "errorMessage": "",
+                        "functionName": "left",
+                        "line": 24
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 24,
+                        "durationMicroseconds": 78,
+                        "errorMessage": "",
+                        "functionName": "right",
+                        "line": 25
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 26,
+                        "durationMicroseconds": 71,
+                        "errorMessage": "",
+                        "functionName": "cursorShape",
+                        "line": 29
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 30,
+                        "durationMicroseconds": 183,
+                        "errorMessage": "",
+                        "functionName": "onActiveChanged",
+                        "line": 34
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 22,
+                        "durationMicroseconds": 58,
+                        "errorMessage": "",
+                        "functionName": "audioOutput",
+                        "line": 53
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 33,
+                        "durationMicroseconds": 396,
+                        "errorMessage": "Cannot find name isPlaying",
+                        "functionName": "onPlaybackStateChanged",
+                        "line": 55
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 26,
+                        "durationMicroseconds": 194,
+                        "errorMessage": "",
+                        "functionName": "onErrorOccurred",
+                        "line": 72
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 23,
+                        "durationMicroseconds": 52,
+                        "errorMessage": "",
+                        "functionName": "fill",
+                        "line": 81
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 24,
+                        "durationMicroseconds": 150,
+                        "errorMessage": "",
+                        "functionName": "width",
+                        "line": 90
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 25,
+                        "durationMicroseconds": 118,
+                        "errorMessage": "",
+                        "functionName": "height",
+                        "line": 91
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 31,
+                        "durationMicroseconds": 64,
+                        "errorMessage": "",
+                        "functionName": "listExpanded",
+                        "line": 93
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 31,
+                        "durationMicroseconds": 148,
+                        "errorMessage": "",
+                        "functionName": "onToggleList",
+                        "line": 94
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 35,
+                        "durationMicroseconds": 47,
+                        "errorMessage": "",
+                        "functionName": "centerIn",
+                        "line": 92
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 30,
+                        "durationMicroseconds": 63,
+                        "errorMessage": "",
+                        "functionName": "folderModel",
+                        "line": 108
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 37,
+                        "durationMicroseconds": 66,
+                        "errorMessage": "",
+                        "functionName": "currentPlayingPath",
+                        "line": 109
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 28,
+                        "durationMicroseconds": 60,
+                        "errorMessage": "",
+                        "functionName": "isPlaying",
+                        "line": 110
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 31,
+                        "durationMicroseconds": 59,
+                        "errorMessage": "",
+                        "functionName": "listExpanded",
+                        "line": 111
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 30,
+                        "durationMicroseconds": 109,
+                        "errorMessage": "Cannot generate efficient code for call to untyped JavaScript function",
+                        "functionName": "onPlayMusic",
+                        "line": 112
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 30,
+                        "durationMicroseconds": 37,
+                        "errorMessage": "",
+                        "functionName": "onPlayMusic",
+                        "line": 112
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 41,
+                        "durationMicroseconds": 136,
+                        "errorMessage": "",
+                        "functionName": "preferredHeight",
+                        "line": 114
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 25,
+                        "durationMicroseconds": 62,
+                        "errorMessage": "",
+                        "functionName": "player",
+                        "line": 120
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 37,
+                        "durationMicroseconds": 71,
+                        "errorMessage": "",
+                        "functionName": "currentPlayingPath",
+                        "line": 121
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 27,
+                        "durationMicroseconds": 57,
+                        "errorMessage": "",
+                        "functionName": "playMode",
+                        "line": 122
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 32,
+                        "durationMicroseconds": 68,
+                        "errorMessage": "",
+                        "functionName": "playModeIcons",
+                        "line": 123
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 29,
+                        "durationMicroseconds": 94,
+                        "errorMessage": "",
+                        "functionName": "onPlayNext",
+                        "line": 124
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 33,
+                        "durationMicroseconds": 77,
+                        "errorMessage": "",
+                        "functionName": "onPlayPrevious",
+                        "line": 125
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 36,
+                        "durationMicroseconds": 75,
+                        "errorMessage": "",
+                        "functionName": "onTogglePlayPause",
+                        "line": 126
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 35,
+                        "durationMicroseconds": 255,
+                        "errorMessage": "",
+                        "functionName": "onChangePlayMode",
+                        "line": 127
+                    },
+                    {
+                        "codegenSuccessful": true,
+                        "column": 22,
+                        "durationMicroseconds": 95,
+                        "errorMessage": "",
+                        "functionName": "nameFilters",
+                        "line": 135
+                    },
+                    {
+                        "codegenSuccessful": false,
+                        "column": 28,
+                        "durationMicroseconds": 157,
+                        "errorMessage": "Cannot generate efficient code for lookup of function property.",
+                        "functionName": "onCompleted",
+                        "line": 307
+                    }
+                ],
+                "filePath": "/root/qq-music/main.qml"
+            }
+        ],
+        "moduleId": "QQMusic(appQQMusic)"
+    }
+]

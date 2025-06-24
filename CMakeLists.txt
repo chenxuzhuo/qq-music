@@ -20,11 +20,7 @@ qt_add_qml_module(appQQMusic
     QML_FILES MoveSlider.qml
     QML_FILES Qbottom.qml
     QML_FILES Volume.qml
-    QML_FILES
 
-    QML_FILES
-    QML_FILES
-    QML_FILES
     QML_FILES Left.qml
     QML_FILES Right.qml
 )

@@ -1,0 +1,196 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-d8acfd31e6e7c9a7a641.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "QQMusic",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "all_aotstats::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_aotstats-Debug-3f7fda04690c5421a1a7.json",
+					"name" : "all_aotstats",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint-Debug-60f03a63be713c2fcc13.json",
+					"name" : "all_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_json-Debug-056bf4a4714e80d121ae.json",
+					"name" : "all_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmllint_module-Debug-cd257cee73bd2403f235.json",
+					"name" : "all_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-all_qmltyperegistrations-Debug-94dd15c3b77da0bb434e.json",
+					"name" : "all_qmltyperegistrations",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic-Debug-8d5d1336c5f0067a5126.json",
+					"name" : "appQQMusic",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_autogen-Debug-a1ca06f54ef4f28368f9.json",
+					"name" : "appQQMusic_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_autogen_timestamp_deps-Debug-7cd70f28bd0a5c9a35f2.json",
+					"name" : "appQQMusic_autogen_timestamp_deps",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_copy_qml::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_copy_qml-Debug-f03a4b12b5a3eeb09f71.json",
+					"name" : "appQQMusic_copy_qml",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_copy_res::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_copy_res-Debug-0aa68137173719101e8d.json",
+					"name" : "appQQMusic_copy_res",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_qmlimportscan::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_qmlimportscan-Debug-24463b56340185dfdcbd.json",
+					"name" : "appQQMusic_qmlimportscan",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_qmllint::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_qmllint-Debug-705494a1612083de357f.json",
+					"name" : "appQQMusic_qmllint",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_qmllint_json::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_qmllint_json-Debug-d34af8ec083b547ddc54.json",
+					"name" : "appQQMusic_qmllint_json",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_qmllint_module::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_qmllint_module-Debug-0dd9d209e103b029c92a.json",
+					"name" : "appQQMusic_qmllint_module",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "appQQMusic_qmltyperegistration::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appQQMusic_qmltyperegistration-Debug-7de7b5e0611f6bc10a7a.json",
+					"name" : "appQQMusic_qmltyperegistration",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "module_appQQMusic_aotstats_target::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-module_appQQMusic_aotstats_target-Debug-1d851eed8a26bc47be86.json",
+					"name" : "module_appQQMusic_aotstats_target",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/root/qq-music/build/Desktop_Qt_6_9_1-Debug",
+		"source" : "/root/qq-music"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

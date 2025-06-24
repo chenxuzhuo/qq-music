@@ -1,0 +1,10 @@
+-I
+/root/qq-music/build/Desktop_Qt_6_9_1-Debug
+-I
+/root/qt/Qt/6.9.1/gcc_64/qml
+--resource
+/root/qq-music/build/Desktop_Qt_6_9_1-Debug/.qt/rcc/qmake_QQMusic.qrc
+--resource
+/root/qq-music/build/Desktop_Qt_6_9_1-Debug/.qt/rcc/appQQMusic_raw_qml_0.qrc
+--module
+QQMusic
