@@ -77,59 +77,68 @@ Window {
         volume: 0.5
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 10
+    //三个主要窗口
+    Qleft {
+        id:leftRect
+        width: 250  // 固定宽度
 
-        // 主内容区域
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            spacing: 5
-
-            Item {
-                id: leftContainer
-                Layout.preferredWidth: 300  // 固定宽度
-                Layout.fillHeight: true
-                Left {
-                    id: leftPanel
-                    width: parent.width - 40  // 减去边距
-                    height: parent.height - 40  // 减去边距
-                    anchors.centerIn: parent
-                    listExpanded: window.listExpanded
-                    onToggleList: window.listExpanded = !window.listExpanded
-                }
-            }
-
-
-            Right {
-                id: rightPanel
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                folderModel: folderModel
-                currentPlayingPath: window.currentPlayingPath
-                isPlaying: window.isPlaying
-                listExpanded: window.listExpanded
-                onPlayMusic: (filePath) => window.playMusic(filePath)
-
-                Layout.preferredHeight: listExpanded ? implicitHeight : 0
-            }
-        }
-
-        Qbottom {
-            Layout.fillWidth: true
-            height:150
-            player: player
-            //audioOutput: audioOutput
-            currentPlayingPath: window.currentPlayingPath
-            playMode: window.playMode
-            playModeIcons: window.playModeIcons
-            onPlayNext: window.playNext()
-            onPlayPrevious: window.playPrevious()
-            onTogglePlayPause: window.togglePlayPause()
-            onChangePlayMode: window.playMode = (window.playMode + 1) % 3
-        }
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.margins: 20
     }
+
+    Qright {
+        id: rightRect
+
+        height: 800
+
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.left: leftRect.right
+        anchors.bottom: bottomRect.top
+
+        color: "#2C2C2C"
+
+        folderModel: folderModel
+        currentPlayingPath: window.currentPlayingPath
+        isPlaying: window.isPlaying
+        listExpanded: window.listExpanded
+        onPlayMusic: (filePath) => window.playMusic(filePath)
+
+        Layout.preferredHeight: listExpanded ? implicitHeight : 0
+    }
+
+    Qbottom {
+        id: bottomRect
+
+        anchors.top: rightRect.bottom
+        anchors.right: parent.right
+        anchors.left: leftRect.right
+        anchors.bottom: parent.bottom
+
+        // 绑定当前歌曲的收藏状态
+            isFavorite: {
+                if (!currentPlayingPath) return false;
+                const normalizedPath = currentPlayingPath.replace("file://", "");
+                return leftRect.favoriteSongs.includes(normalizedPath);
+            }
+
+            // 连接信号到Qleft的处理函数
+            onAddFavorite: leftRect.addFavorite(filePath)
+            onRemoveFavorite: leftRect.removeFavorite(filePath)
+
+
+        player: player
+        currentPlayingPath: window.currentPlayingPath
+        playMode: window.playMode
+        playModeIcons: window.playModeIcons
+        onPlayNext: window.playNext()
+        onPlayPrevious: window.playPrevious()
+        onTogglePlayPause: window.togglePlayPause()
+        onChangePlayMode: window.playMode = (window.playMode + 1) % 3
+    }
+
 
     FolderListModel {
         id: folderModel
