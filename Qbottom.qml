@@ -17,7 +17,7 @@ Rectangle {
     signal toggleList()
 
     property bool listExpanded: false
-    // 新增属性：当前歌曲是否被收藏
+    // 当前歌曲是否被收藏（由外部绑定）
     property bool isFavorite: false
 
     // 新增信号
@@ -36,7 +36,7 @@ Rectangle {
         Image{
             width:44
             height:44
-            source:"qrc:/image/15.jpg"    
+            source:"qrc:/image/15.jpg"
             sourceSize: Qt.size(74,74)
         }
         ColumnLayout{
@@ -48,21 +48,18 @@ Rectangle {
             RowLayout{
                 Layout.preferredWidth: textItem.width
 
-                // ===== 修改爱心按钮区域 =====
+                // ===== 修复爱心按钮区域 =====
                 Rectangle {
                     id: favoriteButton
                     width: 30
                     height: 30
                     color: "transparent"
 
-                    // 状态属性：是否收藏
-                    property bool isFavorite: bottomRect.isFavorite
-
-                    // 爱心图标 - 使用状态绑定
+                    // 爱心图标 - 直接绑定到外部状态
                     Image {
                         id: loveIcon
                         anchors.centerIn: parent
-                        source: favoriteButton.isFavorite ?
+                        source: bottomRect.isFavorite ?
                             "qrc:/image/full-love.png" :
                             "qrc:/image/love.png"
                         sourceSize: Qt.size(20,20)
@@ -78,39 +75,29 @@ Rectangle {
                     TapHandler {
                         onTapped: {
                             if (currentPlayingPath) {
-                                // 切换状态
-                                favoriteButton.isFavorite = !favoriteButton.isFavorite;
-                                bottomRect.isFavorite = favoriteButton.isFavorite;
-
-                                // 根据状态发送不同信号
-                                if (favoriteButton.isFavorite) {
-                                    addFavorite(currentPlayingPath);
-                                } else {
+                                // 根据当前状态发送不同信号
+                                if (bottomRect.isFavorite) {
                                     removeFavorite(currentPlayingPath);
+                                } else {
+                                    addFavorite(currentPlayingPath);
                                 }
                             }
                         }
                     }
 
                     // 提示文本
-                    ToolTip.text: favoriteButton.isFavorite ?
+                    ToolTip.text: bottomRect.isFavorite ?
                         qsTr("取消喜欢") : qsTr("喜欢这首歌")
                     ToolTip.visible: hoverHandler.hovered
-
-                    // 状态切换动画
-                    Behavior on isFavorite {
-                        PropertyAnimation { duration: 300 }
-                    }
                 }
                 // ===== 爱心按钮区域结束 =====
 
                 Image{
-
                     source: "qrc:/image/order.png"
                     sourceSize: Qt.size(20,20)
                 }
                 Image{
-                    source: "qrc:/image/more1.png" 
+                    source: "qrc:/image/more1.png"
                     sourceSize: Qt.size(20,20)
                 }
             }
@@ -120,17 +107,12 @@ Rectangle {
             height:44
         }
 
-        Functions{
-            id:funct
-        }
-
         ColumnLayout{
             RowLayout{
                 spacing:30
                 Layout.preferredWidth:row.width
 
                 // 播放模式切换按钮
-                // 播放模式按钮
                 Button {
                     id: modeButton
                     icon.source: playModeIcons[playMode]
@@ -152,7 +134,7 @@ Rectangle {
                 Button{
                     id: playButton
                     icon.name: player.playbackState === MediaPlayer.PlayingState ? "media-playback-pause" : "media-playback-start"
-                    onClicked: player.playbackState === MediaPlayer.PlayingState ? player.pause() : player.play()
+                    onClicked: togglePlayPause()
                 }
                 Button{
                     Layout.preferredWidth:50

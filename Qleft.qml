@@ -84,6 +84,9 @@ Rectangle {
                 saveFavorites();
                 console.log("已添加到收藏:", normalizedPath);
             }
+
+            console.log("添加收藏:", normalizedPath)
+            favoriteSongsChanged() // 确保触发信号
         }
 
         // 从收藏移除歌曲
@@ -96,6 +99,9 @@ Rectangle {
                 saveFavorites();
                 console.log("已从收藏移除:", normalizedPath);
             }
+
+            console.log("移除收藏:", normalizedPath)
+                favoriteSongsChanged() // 确保触发信号
         }
 
     ColumnLayout {

@@ -122,7 +122,6 @@ Window {
             onAddFavorite: leftRect.addFavorite(filePath)
             onRemoveFavorite: leftRect.removeFavorite(filePath)
 
-
         player: player
         currentPlayingPath: window.currentPlayingPath
         playMode: window.playMode
