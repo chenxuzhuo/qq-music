@@ -205,43 +205,15 @@ Rectangle {
 
         }
 
-        // Image{
-        //     anchors.bottomMargin: 10
-        //     Layout.preferredWidth:50
-        //     source:"qrc:/image/more.png"
-        //     sourceSize: Qt.size(44,44)
-        //     TapHandler{
-        //         onTapped:toggleList()
-        //     }
-        // }
-
-        Column {
-                spacing: 5
-
-                Image {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    source: "qrc:/image/more.png"
-                    sourceSize: Qt.size(44, 44)
-
-                    TapHandler {
-                        onTapped: {
-                            listExpanded = !listExpanded
-                            statusText.visible = true  // 显示状态文本
-                            //statusTimer.restart()      // 重启隐藏计时器
-                        }
-                    }
-                }
-
-                // 状态提示文本
-                Text {
-                    id: statusText
-                    text: listExpanded ? "音乐列表显示" : "音乐列表隐藏"
-                    color: "white"
-                    font.pixelSize: 12
-                    visible: false
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
+        Image{
+            anchors.bottomMargin: 10
+            Layout.preferredWidth:50
+            source:"qrc:/image/more.png"
+            sourceSize: Qt.size(44,44)
+            TapHandler{
+                onTapped:toggleList()
             }
+        }
 
         Item{
             Layout.preferredWidth:20

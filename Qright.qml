@@ -72,7 +72,6 @@ Rectangle {
         id: fileListView
         anchors {
             top: rec.bottom  // 顶部对齐到rec的底部
-            //left: parent.left
             right: parent.right
             bottom: parent.bottom  // 底部对齐到父容器底部
             margins: 10  // 添加适当边距
