@@ -116,7 +116,7 @@ Rectangle {
                 clip: true
                 Image {
                     anchors.fill: parent
-                    source: "file:///root/qq-music/image/04.jpg"
+                    source: "qrc:/image/04.jpg"
                     sourceSize: Qt.size(isNarrow ? 30 : 44, isNarrow ? 30 : 44)
                 }
             }
@@ -146,7 +146,7 @@ Rectangle {
                 radius: 5
 
                 Image {
-                    source: "file:///root/qq-music/image/first.png"
+                    source: "qrc:/image/first.png"
                     width: isNarrow ? 30 : 44
                     height: isNarrow ? 30 : 44
                     anchors.centerIn: parent
@@ -167,7 +167,7 @@ Rectangle {
                 radius: 5
 
                 Image {
-                    source: "file:///root/qq-music/image/music.png"
+                    source: "qrc:/image/music.png"
                     width: isNarrow ? 30 : 44
                     height: isNarrow ? 30 : 44
                     anchors.centerIn: parent
@@ -199,7 +199,7 @@ Rectangle {
                 radius: 5
 
                 Image {
-                    source: "file:///root/qq-music/image/first.png"
+                    source: "qrc:/image/first.png"
                     width: 30
                     height: 30
                     anchors.centerIn: parent
@@ -221,7 +221,7 @@ Rectangle {
                 radius: 5
 
                 Image {
-                    source: "file:///root/qq-music/image/music.png"
+                    source: "qrc:/image/music.png"
                     width: 30
                     height: 30
                     anchors.centerIn: parent
@@ -259,7 +259,7 @@ Rectangle {
                     visible: !isNarrow
 
                     Image {
-                        source: "file:///root/qq-music/image/love.png"
+                        source: "qrc:/image/love.png"
                         width: 24
                         height: 24
                         sourceSize: Qt.size(24, 24)
@@ -276,7 +276,7 @@ Rectangle {
                 Image {
                     visible: isNarrow
                     anchors.centerIn: parent
-                    source: "file:///root/qq-music/image/love.png"
+                    source: "qrc:/image/love.png"
                     width: 24
                     height: 24
                 }
@@ -303,7 +303,7 @@ Rectangle {
                     visible: !isNarrow
 
                     Image {
-                        source: "file:///root/qq-music/image/repl.png"
+                        source: "qrc:/image/repl.png"
                         width: 24
                         height: 24
                         sourceSize: Qt.size(24, 24)
@@ -320,7 +320,7 @@ Rectangle {
                 Image {
                     visible: isNarrow
                     anchors.centerIn: parent
-                    source: "file:///root/qq-music/image/repl.png"
+                    source: "qrc:/image/repl.png"
                     width: 24
                     height: 24
                 }
@@ -347,7 +347,7 @@ Rectangle {
                     visible: !isNarrow
 
                     Image {
-                        source: "file:///root/qq-music/image/export-down.png"
+                        source: "qrc:/image/export-down.png"
                         width: 24
                         height: 24
                         sourceSize: Qt.size(24, 24)
@@ -364,7 +364,7 @@ Rectangle {
                 Image {
                     visible: isNarrow
                     anchors.centerIn: parent
-                    source: "file:///root/qq-music/image/export-down.png"
+                    source: "qrc:/image/export-down.png"
                     width: 24
                     height: 24
                 }
@@ -400,7 +400,7 @@ Rectangle {
                 Image {
                     visible: !isNarrow
                     anchors.centerIn: parent
-                    source: "file:///root/qq-music/image/next.png"
+                    source: "qrc:/image/next.png"
                     width: 24
                     height: 24
                 }
@@ -409,7 +409,7 @@ Rectangle {
                 Image {
                     visible: isNarrow
                     anchors.centerIn: parent
-                    source: "file:///root/qq-music/image/zoom.png"
+                    source: "qrc:/image/next.png"
                     width: 20
                     height: 20
                 }
@@ -432,7 +432,7 @@ Rectangle {
 
                 Image {
                     anchors.centerIn: parent
-                    source: "file:///root/qq-music/image/setting.png"
+                    source: "qrc:/image/setting.png"
                     width: 24
                     height: 24
                 }
@@ -455,7 +455,7 @@ Rectangle {
 
                 Image {
                     anchors.centerIn: parent
-                    source: "file:///root/qq-music/image/skin.png"
+                    source: "qrc:/image/skin.png"
                     width: 24
                     height: 24
                 }

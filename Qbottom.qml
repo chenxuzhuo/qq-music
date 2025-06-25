@@ -38,7 +38,7 @@ Rectangle {
         Image{
             width:44
             height:44
-            source:"file:///root/qq-music/image/15.jpg"
+            source:"qrc:/image/15.jpg"
             sourceSize: Qt.size(74,74)
         }
         ColumnLayout{
@@ -65,8 +65,8 @@ Rectangle {
                         id: loveIcon
                         anchors.centerIn: parent
                         source: favoriteButton.isFavorite ?
-                            "file:///root/qq-music/image/full-love.png" :
-                            "file:///root/qq-music/image/love.png"
+                            "qrc:/image/full-love.png" :
+                            "qrc:/image/love.png"
                         sourceSize: Qt.size(20,20)
                     }
 
@@ -107,11 +107,11 @@ Rectangle {
                 // ===== 爱心按钮区域结束 =====
 
                 Image{
-                    source: "file:///root/qq-music/image/order.png"
+                    source: "qrc:/image/order.png"
                     sourceSize: Qt.size(20,20)
                 }
                 Image{
-                    source: "file:///root/qq-music/image/more1.png"
+                    source: "qrc:/image/more1.png"
                     sourceSize: Qt.size(20,20)
                 }
             }
@@ -185,7 +185,7 @@ Rectangle {
         Image{
             anchors.bottomMargin: 10
             Layout.preferredWidth:50
-            source:"file:///root/qq-music/image/standard.png"
+            source:"qrc:/image/standard.png"
             sourceSize: Qt.size(44,44)
 
         }
@@ -193,27 +193,55 @@ Rectangle {
         Image{
             anchors.bottomMargin: 10
             Layout.preferredWidth:50
-            source:"file:///root/qq-music/image/device off.png"
+            source:"qrc:/image/device off.png"
             sourceSize: Qt.size(44,44)
         }
 
         Image{
             anchors.bottomMargin: 10
             Layout.preferredWidth:50
-            source:"file:///root/qq-music/image/word.png"
+            source:"qrc:/image/word.png"
             sourceSize: Qt.size(44,44)
 
         }
 
-        Image{
-            anchors.bottomMargin: 10
-            Layout.preferredWidth:50
-            source:"file:///root/qq-music/image/more.png"
-            sourceSize: Qt.size(44,44)
-            TapHandler{
-                onTapped:toggleList()
+        // Image{
+        //     anchors.bottomMargin: 10
+        //     Layout.preferredWidth:50
+        //     source:"qrc:/image/more.png"
+        //     sourceSize: Qt.size(44,44)
+        //     TapHandler{
+        //         onTapped:toggleList()
+        //     }
+        // }
+
+        Column {
+                spacing: 5
+
+                Image {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    source: "qrc:/image/more.png"
+                    sourceSize: Qt.size(44, 44)
+
+                    TapHandler {
+                        onTapped: {
+                            listExpanded = !listExpanded
+                            statusText.visible = true  // 显示状态文本
+                            //statusTimer.restart()      // 重启隐藏计时器
+                        }
+                    }
+                }
+
+                // 状态提示文本
+                Text {
+                    id: statusText
+                    text: listExpanded ? "音乐列表显示" : "音乐列表隐藏"
+                    color: "white"
+                    font.pixelSize: 12
+                    visible: false
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
             }
-        }
 
         Item{
             Layout.preferredWidth:20
