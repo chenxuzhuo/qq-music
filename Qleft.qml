@@ -303,6 +303,7 @@ Rectangle {
                     visible: !isNarrow
 
                     Image {
+
                         source: "qrc:/image/repl.png"
                         width: 24
                         height: 24
@@ -347,7 +348,7 @@ Rectangle {
                     visible: !isNarrow
 
                     Image {
-                        source: "qrc:/image/export-down.png"
+                         source: "qrc:/image/export-down.png"
                         width: 24
                         height: 24
                         sourceSize: Qt.size(24, 24)
@@ -364,7 +365,7 @@ Rectangle {
                 Image {
                     visible: isNarrow
                     anchors.centerIn: parent
-                    source: "qrc:/image/export-down.png"
+                     source: "qrc:/image/export-down.png"
                     width: 24
                     height: 24
                 }
@@ -432,6 +433,7 @@ Rectangle {
 
                 Image {
                     anchors.centerIn: parent
+
                     source: "qrc:/image/setting.png"
                     width: 24
                     height: 24
@@ -456,6 +458,7 @@ Rectangle {
                 Image {
                     anchors.centerIn: parent
                     source: "qrc:/image/skin.png"
+
                     width: 24
                     height: 24
                 }

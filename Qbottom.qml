@@ -14,11 +14,9 @@ Rectangle {
     property string currentPlayingPath
     property int playMode
     property var playModeIcons
-
     signal toggleList()
 
     property bool listExpanded: false
-
     // 新增属性：当前歌曲是否被收藏
     property bool isFavorite: false
 
@@ -38,7 +36,7 @@ Rectangle {
         Image{
             width:44
             height:44
-            source:"qrc:/image/15.jpg"
+            source:"qrc:/image/15.jpg"    
             sourceSize: Qt.size(74,74)
         }
         ColumnLayout{
@@ -107,11 +105,12 @@ Rectangle {
                 // ===== 爱心按钮区域结束 =====
 
                 Image{
+
                     source: "qrc:/image/order.png"
                     sourceSize: Qt.size(20,20)
                 }
                 Image{
-                    source: "qrc:/image/more1.png"
+                    source: "qrc:/image/more1.png" 
                     sourceSize: Qt.size(20,20)
                 }
             }

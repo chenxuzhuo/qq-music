@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.28.2)
 
 project(QQMusic VERSION 0.1 LANGUAGES CXX)
 
@@ -27,6 +27,7 @@ qt_add_qml_module(appQQMusic
     QML_FILES
     QML_FILES Qleft.qml
     QML_FILES Qright.qml
+
     QML_FILES Functions.qml
     SOURCES lrcfilereader.h lrcfilereader.cpp
 )

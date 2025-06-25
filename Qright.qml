@@ -115,7 +115,6 @@ Rectangle {
 
                     Label {
                         text: funct.formatFilePath(filePath)
-                        color: "gray"
                         font.pixelSize: 12
                         elide: Text.ElideLeft
                     }

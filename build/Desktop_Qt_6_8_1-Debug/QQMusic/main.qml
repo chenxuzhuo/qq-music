@@ -82,6 +82,7 @@ Window {
         id:leftRect
         width: 250  // 固定宽度
 
+<<<<<<<< HEAD:build/Desktop_Qt_6_8_1-Debug/QQMusic/main.qml
          anchors.top: parent.top
          anchors.bottom: parent.bottom
          anchors.left: parent.left
@@ -89,6 +90,15 @@ Window {
     }
 
     Right {
+========
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.margins: 20
+    }
+
+    Qright {
+>>>>>>>> 97c9c7737065b54d5c6b86f50392a4f0799bc551:main.qml
         id: rightRect
 
         height: 800
@@ -117,6 +127,21 @@ Window {
         anchors.left: leftRect.right
         anchors.bottom: parent.bottom
 
+<<<<<<<< HEAD:build/Desktop_Qt_6_8_1-Debug/QQMusic/main.qml
+========
+        // 绑定当前歌曲的收藏状态
+            isFavorite: {
+                if (!currentPlayingPath) return false;
+                const normalizedPath = currentPlayingPath.replace("file://", "");
+                return leftRect.favoriteSongs.includes(normalizedPath);
+            }
+
+            // 连接信号到Qleft的处理函数
+            onAddFavorite: leftRect.addFavorite(filePath)
+            onRemoveFavorite: leftRect.removeFavorite(filePath)
+
+
+>>>>>>>> 97c9c7737065b54d5c6b86f50392a4f0799bc551:main.qml
         player: player
         currentPlayingPath: window.currentPlayingPath
         playMode: window.playMode
