@@ -3,10 +3,9 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import QtMultimedia
-import Qt.labs.platform   // 文件对话框需要
+import Qt.labs.platform
 
 Rectangle {
-
     id: bottomRect
     color: "#F5F5F5"
 
@@ -15,6 +14,17 @@ Rectangle {
     property string currentPlayingPath
     property int playMode
     property var playModeIcons
+
+    signal toggleList()
+
+    property bool listExpanded: false
+
+    // 新增属性：当前歌曲是否被收藏
+    property bool isFavorite: false
+
+    // 新增信号
+    signal addFavorite(string filePath)   // 添加收藏信号
+    signal removeFavorite(string filePath) // 移除收藏信号
 
     signal playNext()
     signal playPrevious()
@@ -29,8 +39,7 @@ Rectangle {
             width:44
             height:44
             source:"file:///root/qq-music/image/15.jpg"
-
-            sourceSize: Qt.size(74,74)  // 优化加载尺寸
+            sourceSize: Qt.size(74,74)
         }
         ColumnLayout{
             Text{
@@ -39,33 +48,81 @@ Rectangle {
             }
 
             RowLayout{
-                Layout.preferredWidth: textItem.width  // 关键修改：宽度与文本对齐
-                    Image{
-                        source: "file:///root/qq-music/image/love.png"  // 确保路径与.qrc文件一致
+                Layout.preferredWidth: textItem.width
+
+                // ===== 修改爱心按钮区域 =====
+                Rectangle {
+                    id: favoriteButton
+                    width: 30
+                    height: 30
+                    color: "transparent"
+
+                    // 状态属性：是否收藏
+                    property bool isFavorite: bottomRect.isFavorite
+
+                    // 爱心图标 - 使用状态绑定
+                    Image {
+                        id: loveIcon
+                        anchors.centerIn: parent
+                        source: favoriteButton.isFavorite ?
+                            "file:///root/qq-music/image/full-love.png" :
+                            "file:///root/qq-music/image/love.png"
                         sourceSize: Qt.size(20,20)
                     }
-                    Image{
-                        source: "file:///root/qq-music/image/order.png"
-                        sourceSize: Qt.size(20,20)
+
+                    // 鼠标交互
+                    HoverHandler {
+                        id: hoverHandler
+                        cursorShape: Qt.PointingHandCursor
                     }
-                    Image{
-                        source: "file:///root/qq-music/image/more1.png"
-                        sourceSize: Qt.size(20,20)
+
+                    // 点击处理
+                    TapHandler {
+                        onTapped: {
+                            if (currentPlayingPath) {
+                                // 切换状态
+                                favoriteButton.isFavorite = !favoriteButton.isFavorite;
+                                bottomRect.isFavorite = favoriteButton.isFavorite;
+
+                                // 根据状态发送不同信号
+                                if (favoriteButton.isFavorite) {
+                                    addFavorite(currentPlayingPath);
+                                } else {
+                                    removeFavorite(currentPlayingPath);
+                                }
+                            }
+                        }
                     }
+
+                    // 提示文本
+                    ToolTip.text: favoriteButton.isFavorite ?
+                        qsTr("取消喜欢") : qsTr("喜欢这首歌")
+                    ToolTip.visible: hoverHandler.hovered
+
+                    // 状态切换动画
+                    Behavior on isFavorite {
+                        PropertyAnimation { duration: 300 }
+                    }
+                }
+                // ===== 爱心按钮区域结束 =====
+
+                Image{
+                    source: "file:///root/qq-music/image/order.png"
+                    sourceSize: Qt.size(20,20)
+                }
+                Image{
+                    source: "file:///root/qq-music/image/more1.png"
+                    sourceSize: Qt.size(20,20)
+                }
             }
         }
         Item{
-            width: 44
+            width: 30
             height:44
         }
 
-        function formatFilePath(path) {
-            return path.toString().replace("file://", "").replace(/^.*\//, "")
-        }
-
-        function formatTime(ms) {
-            const sec = Math.floor(ms / 1000)
-            return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
+        Functions{
+            id:funct
         }
 
         ColumnLayout{
@@ -94,7 +151,6 @@ Rectangle {
                     onClicked: playPrevious()
                 }
                 Button{
-
                     id: playButton
                     icon.name: player.playbackState === MediaPlayer.PlayingState ? "media-playback-pause" : "media-playback-start"
                     onClicked: player.playbackState === MediaPlayer.PlayingState ? player.pause() : player.play()
@@ -121,7 +177,7 @@ Rectangle {
         }
 
         Item{
-            Layout.preferredWidth:parent.width/10
+            Layout.preferredWidth:parent.width/20
             Layout.fillWidth:true
             Layout.fillHeight:true
         }
@@ -154,11 +210,13 @@ Rectangle {
             Layout.preferredWidth:50
             source:"file:///root/qq-music/image/more.png"
             sourceSize: Qt.size(44,44)
-
+            TapHandler{
+                onTapped:toggleList()
+            }
         }
 
         Item{
-            Layout.preferredWidth:parent.width/10
+            Layout.preferredWidth:20
             Layout.fillWidth:true
             Layout.fillHeight:true
         }

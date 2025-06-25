@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="/QQMusic/">
+    <file alias="main.qml">/root/Item/qq-music/main.qml</file>
+    <file alias="Player.qml">/root/Item/qq-music/Player.qml</file>
+    <file alias="MoveSlider.qml">/root/Item/qq-music/MoveSlider.qml</file>
+    <file alias="Qbottom.qml">/root/Item/qq-music/Qbottom.qml</file>
+    <file alias="Volume.qml">/root/Item/qq-music/Volume.qml</file>
+    <file alias="Qleft.qml">/root/Item/qq-music/Qleft.qml</file>
+    <file alias="Qright.qml">/root/Item/qq-music/Qright.qml</file>
+    <file alias="source.qrc">/root/Item/qq-music/source.qrc</file>
+  </qresource>
+</RCC>
+
