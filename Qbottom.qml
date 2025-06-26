@@ -10,39 +10,39 @@ Rectangle {
     color: "#F5F5F5"
 
     property MediaPlayer player
-    property AudioOutput audioOutput
     property string currentPlayingPath
     property int playMode
     property var playModeIcons
     signal toggleList()
+    signal toggleVisible()
 
     property bool listExpanded: false
-    // 当前歌曲是否被收藏（由外部绑定）
     property bool isFavorite: false
+    property bool controlPanelVisible: false
 
-    // 新增信号
-    signal addFavorite(string filePath)   // 添加收藏信号
-    signal removeFavorite(string filePath) // 移除收藏信号
-
+    // 信号定义
     signal playNext()
     signal playPrevious()
     signal togglePlayPause()
     signal changePlayMode()
+    signal addFavorite(string filePath)
+    signal removeFavorite(string filePath)
 
-    RowLayout{
-        anchors.fill:parent
-        anchors.leftMargin:0.02*window.width
+    RowLayout {
+        anchors.fill: parent
+        anchors.leftMargin: 0.02 * parent.width
 
-        Image{
-            width:44
-            height:44
-            source:"qrc:/image/15.jpg"
-            sourceSize: Qt.size(74,74)
+        Image {
+            width: 44
+            height: 44
+            source: "qrc:/image/15.jpg"
+            sourceSize: Qt.size(74, 74)
         }
-        ColumnLayout{
-            Text{
-                id:textItem
-                text:qsTr("QQ音乐 听我想听")
+
+        ColumnLayout {
+            Text {
+                id: textItem
+                text: qsTr("QQ音乐 听我想听")
             }
 
             RowLayout{
@@ -55,6 +55,9 @@ Rectangle {
                     height: 30
                     color: "transparent"
 
+                    TapHandler{
+                        gesturePolicy: TapHandler.ReleaseWithinBounds
+                    }
                     // 爱心图标 - 直接绑定到外部状态
                     Image {
                         id: loveIcon
@@ -102,15 +105,15 @@ Rectangle {
                 }
             }
         }
-        Item{
+
+        Item {
             width: 30
-            height:44
+            height: 44
         }
 
-        ColumnLayout{
-            RowLayout{
-                spacing:30
-                Layout.preferredWidth:row.width
+        ColumnLayout {
+            RowLayout {
+                spacing: 30
 
                 // 播放模式切换按钮
                 Button {
@@ -124,82 +127,78 @@ Rectangle {
                     ToolTip.visible: hovered
                 }
 
-                Button{
-                    Layout.preferredWidth:50
-                    icon.name:"media-seek-backward"
-                    icon.width:20
-                    icon.height:20
+                Button {
+                    Layout.preferredWidth: 50
+                    icon.name: "media-seek-backward"
+                    icon.width: 20
+                    icon.height: 20
                     onClicked: playPrevious()
                 }
-                Button{
+
+                Button {
                     id: playButton
                     icon.name: player.playbackState === MediaPlayer.PlayingState ? "media-playback-pause" : "media-playback-start"
                     onClicked: togglePlayPause()
                 }
-                Button{
-                    Layout.preferredWidth:50
-                    icon.name:"media-seek-forward"
-                    icon.width:20
-                    icon.height:20
+
+                Button {
+                    Layout.preferredWidth: 50
+                    icon.name: "media-seek-forward"
+                    icon.width: 20
+                    icon.height: 20
                     onClicked: playNext()
                 }
-
                 Volume{
                     width:30
                     height:30
                 }
             }
-
-
             MoveSlider{
                 id:row
                 Layout.fillWidth: true
             }
         }
 
-        Item{
-            Layout.preferredWidth:parent.width/20
-            Layout.fillWidth:true
-            Layout.fillHeight:true
+        Item {
+            Layout.preferredWidth: parent.width / 20
+            Layout.fillWidth: true
+            Layout.fillHeight: true
         }
 
-        Image{
+        Image {
             anchors.bottomMargin: 10
-            Layout.preferredWidth:50
-            source:"qrc:/image/standard.png"
-            sourceSize: Qt.size(44,44)
-
+            Layout.preferredWidth: 50
+            source: "qrc:/image/standard.png"
+            sourceSize: Qt.size(44, 44)
         }
 
-        Image{
+        Image {
             anchors.bottomMargin: 10
-            Layout.preferredWidth:50
-            source:"qrc:/image/device off.png"
-            sourceSize: Qt.size(44,44)
+            Layout.preferredWidth: 50
+            source: "qrc:/image/device off.png"
+            sourceSize: Qt.size(44, 44)
         }
 
-        Image{
+        Image {
             anchors.bottomMargin: 10
-            Layout.preferredWidth:50
-            source:"qrc:/image/word.png"
-            sourceSize: Qt.size(44,44)
-
+            Layout.preferredWidth: 50
+            source: "qrc:/image/word.png"
+            sourceSize: Qt.size(44, 44)
         }
 
-        Image{
+        Image {
             anchors.bottomMargin: 10
-            Layout.preferredWidth:50
-            source:"qrc:/image/more.png"
-            sourceSize: Qt.size(44,44)
-            TapHandler{
-                onTapped:toggleList()
+            Layout.preferredWidth: 50
+            source: "qrc:/image/more.png"
+            sourceSize: Qt.size(44, 44)
+            TapHandler {
+                onTapped: toggleList()
+                gesturePolicy: TapHandler.ReleaseWithinBounds
             }
         }
+    }
 
-        Item{
-            Layout.preferredWidth:20
-            Layout.fillWidth:true
-            Layout.fillHeight:true
-        }
+    TapHandler {
+        onTapped: toggleVisible()
     }
 }

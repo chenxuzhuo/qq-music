@@ -20,5 +20,8 @@
         <file>image/next.png</file>
         <file>image/plus.png</file>
         <file>image/full-love.png</file>
+        <file>image/background2.jpg</file>
+        <file>image/circal.png</file>
+        <file>image/random.png</file>
     </qresource>
 </RCC>

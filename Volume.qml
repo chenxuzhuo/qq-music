@@ -1,3 +1,6 @@
+//writed by Chengyan Yao
+//Adjust the volume of the playing music
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

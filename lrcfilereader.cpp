@@ -9,6 +9,7 @@ bool LrcFileReader::readFile(const QString &filePath)
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         m_fileContent = "无法打开文件: " + filePath;
         emit fileContentChanged();
+
         return false;
     }
 
@@ -34,6 +35,7 @@ QVariantList LrcFileReader::parsedLyrics() const
 void LrcFileReader::parseLrcContent()
 {
     m_parsedLyrics.clear();
+
     QStringList lines = m_fileContent.split('\n');
 
     QRegularExpression regex("\\[(\\d+):(\\d+)\\.(\\d+)\\](.*)");

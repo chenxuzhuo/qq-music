@@ -6,9 +6,9 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import Qt.labs.folderlistmodel
 import QtMultimedia
+import se.lrcfilereader
 
 Window {
-    //id: root
     id: window
     width: 1317
     height: 933
@@ -23,7 +23,7 @@ Window {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 40  // 顶部拖拽区域高度
+        height: 40
 
         HoverHandler {
             cursorShape: Qt.SizeAllCursor
@@ -40,30 +40,38 @@ Window {
     property bool isPlaying: false
     property int playMode: 0
     property bool listExpanded: false
+    property bool controlPanelVisible: false
 
     // 播放模式图标路径
     property var playModeIcons: [
-        "file:///root/musicfunction/list/image/order.png",
-        "file:///root/musicfunction/list/image/random.png",
-        "file:///root/musicfunction/list/image/circal.png"
+        "qrc:/image/order.png",
+        "qrc:/image/random.png",
+        "qrc:/image/circal.png"
     ]
 
     MediaPlayer {
         id: player
         audioOutput: audiooutput
-
         onPlaybackStateChanged: {
-                isPlaying = (playbackState === MediaPlayer.PlayingState)
-
-            // 检测播放结束
-                    if (playbackState === MediaPlayer.StoppedState &&
-                        player.duration > 0 &&
-                        Math.abs(player.position - player.duration) < 100) {
-                        funct.autoPlayNext()
-                    }
+            isPlaying = (playbackState === MediaPlayer.PlayingState)
+            if (playbackState === MediaPlayer.StoppedState &&
+                player.duration > 0 &&
+                Math.abs(player.position - player.duration) < 100) {
+                funct.autoPlayNext()
             }
-
+        }
         onErrorOccurred: console.error("播放错误:", errorString)
+        onPositionChanged: {
+            rightRect.updateCurrentLine(player.position)
+        }
+
+        onSourceChanged: {
+            if (source.toString() !== "") {
+                const lrcPath =window.currentPlayingPath.replace(/\.mp3$/, ".lrc")
+                lrcReader.readFile(lrcPath)
+                rightRect.currentLine = -1 // 重置当前歌词行
+            }
+        }
     }
 
     AudioOutput {
@@ -71,11 +79,18 @@ Window {
         volume: 0.5
     }
 
+    // 歌词解析器
+    LrcFileReader {
+        id: lrcReader
+        onFileContentChanged: {
+            rightRect.parseLyrics(fileContent)
+        }
+    }
+
     //三个主要窗口
     Qleft {
         id:leftRect
-        width: 250  // 固定宽度
-
+        width: 250
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -84,44 +99,37 @@ Window {
 
     Qright {
         id: rightRect
-
         height: 800
-
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.left: leftRect.right
         anchors.bottom: bottomRect.top
-
         color: "#2C2C2C"
-
         folderModel: folderModel
         currentPlayingPath: window.currentPlayingPath
         isPlaying: window.isPlaying
         listExpanded: window.listExpanded
-        onPlayMusic: (filePath) => funct.playMusic(filePath)
-
+        controlPanelVisible: window.controlPanelVisible
+        player: player
+        onPlayMusic: (filePath) => {
+            funct.playMusic(filePath)
+            window.currentPlayingPath = filePath
+        }
+        lrcReader: lrcReader
         Layout.preferredHeight: listExpanded ? implicitHeight : 0
     }
 
     Qbottom {
         id: bottomRect
-
         anchors.top: rightRect.bottom
         anchors.right: parent.right
         anchors.left: leftRect.right
         anchors.bottom: parent.bottom
-
-        // 绑定当前歌曲的收藏状态
-            isFavorite: {
-                if (!currentPlayingPath) return false;
-                const normalizedPath = currentPlayingPath.replace("file://", "");
-                return leftRect.favoriteSongs.includes(normalizedPath);
-            }
-
-            // 连接信号到Qleft的处理函数
-            onAddFavorite: leftRect.addFavorite(filePath)
-            onRemoveFavorite: leftRect.removeFavorite(filePath)
-
+        isFavorite: {
+            if (!currentPlayingPath) return false;
+            const normalizedPath = currentPlayingPath.replace("file://", "");
+            return leftRect.favoriteSongs.includes(normalizedPath);
+        }
         player: player
         currentPlayingPath: window.currentPlayingPath
         playMode: window.playMode
@@ -130,11 +138,13 @@ Window {
         onPlayPrevious: funct.playPrevious()
         onTogglePlayPause: funct.togglePlayPause()
         onChangePlayMode: window.playMode = (window.playMode + 1) % 3
-        // 双向绑定展开状态
         listExpanded: window.listExpanded
+        controlPanelVisible: window.controlPanelVisible
+        onToggleVisible: window.controlPanelVisible = !window.controlPanelVisible
         onToggleList: window.listExpanded = !window.listExpanded
+        onAddFavorite: (filePath) => leftRect.addFavorite(filePath)
+        onRemoveFavorite: (filePath) => leftRect.removeFavorite(filePath)
     }
-
 
     FolderListModel {
         id: folderModel
@@ -143,15 +153,13 @@ Window {
         showDirs: false
     }
 
-    Functions{
-        id:funct
+    Functions {
+        id: funct
     }
 
     Component.onCompleted: {
-        //确保有一首歌在程序启动时播放
         folderModel.statusChanged.connect(function() {
             if (folderModel.status === FolderListModel.Ready && folderModel.count > 0) {
-                // 查找默认歌曲
                 const defaultSong = "Go_Beyond_Andy.mp3";
                 let foundIndex = -1;
 
@@ -163,11 +171,15 @@ Window {
                     }
                 }
 
-                // 播放找到的歌曲或第一首
                 const playIndex = foundIndex >= 0 ? foundIndex : 0;
-                funct.playMusic(folderModel.get(playIndex, "filePath"), true);
+                const filePath = folderModel.get(playIndex, "filePath")
+                funct.playMusic(filePath, true);
+                window.currentPlayingPath = filePath
                 player.stop();
+                const lrcPath = filePath.replace(/\.mp3$/, ".lrc");
+                lrcReader.readFile(lrcPath);
             }
         });
     }
 }
+

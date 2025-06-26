@@ -7,12 +7,14 @@
 #include <QFile>
 #include <QTextStream>
 #include <QVariantList>
+#include <QtQml/qqmlregistration.h>
 
 class LrcFileReader : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString fileContent READ fileContent NOTIFY fileContentChanged)
     Q_PROPERTY(QVariantList parsedLyrics READ parsedLyrics NOTIFY parsedLyricsChanged)
+    QML_ELEMENT
 
 public:
     explicit LrcFileReader(QObject *parent = nullptr);
