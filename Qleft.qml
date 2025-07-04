@@ -12,6 +12,8 @@ Rectangle {
     width: isNarrow ? 60 : 250  // 根据状态调整宽度
     state: "wide"
 
+    signal showFavoriteSongsRequested()
+
     // 定义两种状态
     states: [
         State {
@@ -51,28 +53,6 @@ Rectangle {
 
     // 添加收藏列表
         property var favoriteSongs: []
-
-        // 在Component.onCompleted中添加初始化
-        Component.onCompleted: {
-            // 尝试从本地存储加载收藏列表
-            try {
-                const savedFavorites = Qt.application.settings.value("favorites");
-                if (savedFavorites) {
-                    favoriteSongs = JSON.parse(savedFavorites);
-                }
-            } catch (e) {
-                console.error("加载收藏列表失败:", e);
-            }
-        }
-
-        // 保存收藏列表到本地
-        function saveFavorites() {
-            try {
-                Qt.application.settings.setValue("favorites", JSON.stringify(favoriteSongs));
-            } catch (e) {
-                console.error("保存收藏列表失败:", e);
-            }
-        }
 
         // 添加歌曲到收藏
         function addFavorite(filePath) {
@@ -241,7 +221,6 @@ Rectangle {
                 }
             }
         }
-
         // 菜单按钮区域 (宽模式)
         ColumnLayout {
             id: menuColumn
@@ -291,9 +270,13 @@ Rectangle {
                     id: recentMouseArea
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: console.log("我的喜欢")
+                    onClicked: {
+                        console.log("我的喜欢")
+                        showFavoriteSongsRequested(); // 发出信号
+                    }
                 }
             }
+
 
             Rectangle {
                 Layout.fillWidth: true
