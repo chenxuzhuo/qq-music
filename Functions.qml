@@ -58,6 +58,8 @@ Item {
         } while (newIndex === currentIndex && folderModel.count > 1)
 
         playMusic(folderModel.get(newIndex, "filePath"), true)
+        const lrcPath = folderModel.get(newIndex, "filePath").replace(/\.mp3$/, ".lrc");
+        lrcReader.readFile(lrcPath);
     }
 
     function replayCurrent() {
@@ -111,6 +113,8 @@ Item {
             }
 
             playMusic(folderModel.get(currentIndex, "filePath"), true);
+            const lrcPath = folderModel.get(currentIndex, "filePath").replace(/\.mp3$/, ".lrc");
+            lrcReader.readFile(lrcPath);
     }
 
     function playPrevious() {
@@ -143,6 +147,8 @@ Item {
                 }
                 break;
             }
+            const lrcPath = folderModel.get(currentIndex, "filePath").replace(/\.mp3$/, ".lrc");
+            lrcReader.readFile(lrcPath);
     }
 
     function addToSelectedFiles(name, path) {

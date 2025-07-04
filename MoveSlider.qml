@@ -1,3 +1,6 @@
+//writed by Chengyan Yao
+//Synchronization of the progress bar and music playback
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -42,6 +45,17 @@ Item {
             text: funct.formatTime(player.duration)
             font.pixelSize: 12
             Layout.preferredWidth: 30
+        }
+
+        // 播放速度选择器
+        ComboBox {
+            id: speedSelector
+            model: [0.5, 0.8, 1.0, 1.2, 1.5, 2.0]
+            currentIndex: 2  // 默认1倍速
+            onActivated: {
+                player.playbackRate = currentText
+                progressSlider.value = currentText
+            }
         }
 
         Timer {
