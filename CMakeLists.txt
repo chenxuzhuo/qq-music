@@ -12,7 +12,7 @@ qt_add_executable(appQQMusic
 )
 
 qt_add_qml_module(appQQMusic
-    URI QQMusic
+    URI "se.lrcfilereader"
     VERSION 1.0
     QML_FILES Main.qml
     RESOURCES source.qrc
@@ -30,6 +30,9 @@ qt_add_qml_module(appQQMusic
 
     QML_FILES Functions.qml
     SOURCES lrcfilereader.h lrcfilereader.cpp
+    QML_FILES
+    QML_FILES
+    QML_FILES
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

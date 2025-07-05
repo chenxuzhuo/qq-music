@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
+<<<<<<< HEAD
 <!-- Written by QtCreator 16.0.2, 2025-06-25T12:06:12. -->
+=======
+<!-- Written by QtCreator 15.0.0, 2025-07-04T14:57:46. -->
+>>>>>>> d7bc2b65bf7be8fd1bbbf2e8e4df3fbd3136e782
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -92,8 +96,13 @@
   <variable>ProjectExplorer.Project.Target.0</variable>
   <valuemap type="QVariantMap">
    <value type="QString" key="DeviceType">Desktop</value>
+<<<<<<< HEAD
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">C/C++ 2025-06-25</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C/C++ 2025-06-25</value>
+=======
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">C/C++ 2025-07-04</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C/C++ 2025-07-04</value>
+>>>>>>> d7bc2b65bf7be8fd1bbbf2e8e4df3fbd3136e782
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{11d414cf-36d4-4174-a6fa-df08bbbdb9c3}</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
@@ -103,6 +112,7 @@
     <value type="int" key="CMake.Configure.BaseEnvironment">2</value>
     <value type="bool" key="CMake.Configure.ClearSystemEnvironment">false</value>
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
+<<<<<<< HEAD
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 -DCMAKE_GENERATOR:STRING=Unix Makefiles
 -DCMAKE_BUILD_TYPE:STRING=Debug
@@ -114,6 +124,18 @@
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}</value>
     <value type="int" key="EnableQmlDebugging">0</value>
+=======
+    <value type="QString" key="CMake.Initial.Parameters">-DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_CXX_FLAGS_INIT:STRING=%{Qt:QML_DEBUG_FLAG}
+-DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
+-DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
+-DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
+-DCMAKE_GENERATOR:STRING=Unix Makefiles
+-DCMAKE_BUILD_TYPE:STRING=Debug
+-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+-DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}</value>
+>>>>>>> d7bc2b65bf7be8fd1bbbf2e8e4df3fbd3136e782
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/root/QQMusic/build/C_C_2025_06_16-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
@@ -162,6 +184,7 @@
     <value type="int" key="CMake.Configure.BaseEnvironment">2</value>
     <value type="bool" key="CMake.Configure.ClearSystemEnvironment">false</value>
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
+<<<<<<< HEAD
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 -DCMAKE_GENERATOR:STRING=Unix Makefiles
 -DCMAKE_BUILD_TYPE:STRING=Release
@@ -172,6 +195,18 @@
 -DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}</value>
+=======
+    <value type="QString" key="CMake.Initial.Parameters">-DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_CXX_FLAGS_INIT:STRING=%{Qt:QML_DEBUG_FLAG}
+-DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
+-DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
+-DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
+-DCMAKE_GENERATOR:STRING=Unix Makefiles
+-DCMAKE_BUILD_TYPE:STRING=Release
+-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+-DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}</value>
+>>>>>>> d7bc2b65bf7be8fd1bbbf2e8e4df3fbd3136e782
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/root/QQMusic/build/C_C_2025_06_16-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
@@ -218,6 +253,7 @@
     <value type="int" key="CMake.Configure.BaseEnvironment">2</value>
     <value type="bool" key="CMake.Configure.ClearSystemEnvironment">false</value>
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
+<<<<<<< HEAD
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 -DCMAKE_GENERATOR:STRING=Unix Makefiles
 -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo
@@ -228,6 +264,18 @@
 -DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}</value>
+=======
+    <value type="QString" key="CMake.Initial.Parameters">-DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_CXX_FLAGS_INIT:STRING=%{Qt:QML_DEBUG_FLAG}
+-DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
+-DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
+-DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
+-DCMAKE_GENERATOR:STRING=Unix Makefiles
+-DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo
+-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+-DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}</value>
+>>>>>>> d7bc2b65bf7be8fd1bbbf2e8e4df3fbd3136e782
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/root/QQMusic/build/C_C_2025_06_16-RelWithDebInfo</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
@@ -274,6 +322,7 @@
     <value type="int" key="CMake.Configure.BaseEnvironment">2</value>
     <value type="bool" key="CMake.Configure.ClearSystemEnvironment">false</value>
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
+<<<<<<< HEAD
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 -DCMAKE_GENERATOR:STRING=Unix Makefiles
 -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo
@@ -284,6 +333,18 @@
 -DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}</value>
+=======
+    <value type="QString" key="CMake.Initial.Parameters">-DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_CXX_FLAGS_INIT:STRING=%{Qt:QML_DEBUG_FLAG}
+-DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
+-DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
+-DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
+-DCMAKE_GENERATOR:STRING=Unix Makefiles
+-DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo
+-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+-DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}</value>
+>>>>>>> d7bc2b65bf7be8fd1bbbf2e8e4df3fbd3136e782
     <value type="int" key="EnableQmlDebugging">0</value>
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/root/QQMusic/build/C_C_2025_06_16-Profile</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
@@ -331,6 +392,7 @@
     <value type="int" key="CMake.Configure.BaseEnvironment">2</value>
     <value type="bool" key="CMake.Configure.ClearSystemEnvironment">false</value>
     <valuelist type="QVariantList" key="CMake.Configure.UserEnvironmentChanges"/>
+<<<<<<< HEAD
     <value type="QString" key="CMake.Initial.Parameters">-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 -DCMAKE_GENERATOR:STRING=Unix Makefiles
 -DCMAKE_BUILD_TYPE:STRING=MinSizeRel
@@ -341,6 +403,18 @@
 -DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
 -DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}
 -DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}</value>
+=======
+    <value type="QString" key="CMake.Initial.Parameters">-DQT_QMAKE_EXECUTABLE:FILEPATH=%{Qt:qmakeExecutable}
+-DCMAKE_PROJECT_INCLUDE_BEFORE:FILEPATH=%{BuildConfig:BuildDirectory:NativeFilePath}/.qtc/package-manager/auto-setup.cmake
+-DCMAKE_CXX_FLAGS_INIT:STRING=%{Qt:QML_DEBUG_FLAG}
+-DCMAKE_C_COMPILER:FILEPATH=%{Compiler:Executable:C}
+-DCMAKE_COLOR_DIAGNOSTICS:BOOL=ON
+-DCMAKE_CXX_COMPILER:FILEPATH=%{Compiler:Executable:Cxx}
+-DCMAKE_GENERATOR:STRING=Unix Makefiles
+-DCMAKE_BUILD_TYPE:STRING=MinSizeRel
+-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+-DCMAKE_PREFIX_PATH:PATH=%{Qt:QT_INSTALL_PREFIX}</value>
+>>>>>>> d7bc2b65bf7be8fd1bbbf2e8e4df3fbd3136e782
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/root/QQMusic/build/C_C_2025_06_16-MinSizeRel</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
