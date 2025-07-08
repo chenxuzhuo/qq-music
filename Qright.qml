@@ -17,6 +17,7 @@ Rectangle {
     clip: true
 
     property FolderListModel folderModel
+
     property string currentPlayingPath
     property bool isPlaying
     property bool listExpanded: true
@@ -27,6 +28,7 @@ Rectangle {
     property var player
     property var lrcReader
     property var searchSettings: LocalStorage.openDatabaseSync("MusicPlayer", "1.0", "Search history", 100000)
+    property ListModel proxyModel: ListModel {} // 代理模型，用于排序后展示搜索结果
 
     property ListModel lyricModel: ListModel {}
     property int currentLine: -1
@@ -45,6 +47,48 @@ Rectangle {
         );
     }
     // 搜索历史相关函数
+    function searchMusic(query) {
+        proxyModel.clear(); // 清空代理模型
+
+        // 1. 获取MP3文件（过滤其他格式）
+        const mp3Files = [];
+        for (let i = 0; i < folderModel.count; i++) {
+            const file = folderModel.get(i);
+            // 保留后缀为.mp3的文件（不区分大小写）
+            if (file.fileName.toLowerCase().endsWith(".mp3")) {
+                mp3Files.push({
+                    fileName: file.fileName,
+                    filePath: file.filePath
+                });
+            }
+        }
+
+        // 2. 无搜索内容时，按原始顺序显示MP3文件
+        if (!query || query.trim() === "") {
+            mp3Files.forEach(file => {
+                proxyModel.append(file);
+            });
+            return;
+        }
+
+        // 3. 有搜索内容时，匹配的MP3文件置顶
+        const queryLower = query.toLowerCase();
+        const matchedMp3 = []; // 匹配的MP3（放前面）
+        const unmatchedMp3 = []; // 不匹配的MP3（放后面）
+
+        mp3Files.forEach(file => {
+            const fileNameLower = file.fileName.toLowerCase();
+            if (fileNameLower.includes(queryLower)) {
+                matchedMp3.push(file);
+            } else {
+                unmatchedMp3.push(file);
+            }
+        });
+
+        // 4. 按“匹配项→非匹配项”顺序添加到代理模型
+        matchedMp3.forEach(file => proxyModel.append(file));
+        unmatchedMp3.forEach(file => proxyModel.append(file));
+    }
     function addSearchHistory(text) {
         if (text && text.trim() !== "") {
             // 移除已存在的相同搜索内容
@@ -248,7 +292,7 @@ Rectangle {
                         saveSearchHistory();
 
                         // 这里可以添加实际搜索逻辑
-                        //console.log("搜索:", text);
+                        searchMusic(text)
                     }
 
                     onFocusChanged: {
@@ -258,6 +302,12 @@ Rectangle {
                         } else {
                             // 失去焦点时延迟隐藏，以便点击历史记录
                             searchHistoryPopup.visible = false;
+                        }
+                    }
+                    TapHandler {
+                        onTapped: {
+                            // 点击搜索框时显示历史记录
+                            searchHistoryPopup.visible = searchHistory.length > 0;
                         }
                     }
                 }
@@ -607,7 +657,7 @@ Rectangle {
 
         width:400
         clip: true
-        model: folderModel
+        model: proxyModel
         spacing: 5
         visible: listExpanded
 
@@ -704,5 +754,8 @@ Rectangle {
     Component.onCompleted: {
         initDatabase();
         loadSearchHistory();
+        folderModel.setNameFilters(["*.mp3", "*.MP3"]); // 兼容大小写
+        folderModel.setRootPath("/root/tmp/");
+        searchMusic(""); // 触发代理模型初始化，显示MP3
     }
 }
