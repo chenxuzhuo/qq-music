@@ -6,7 +6,7 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import Qt.labs.folderlistmodel
 import QtMultimedia
-import se.lrcfilereader
+
 
 Window {
     id: window
@@ -16,6 +16,7 @@ Window {
     title: qsTr("QQMusic")
     flags: Qt.FramelessWindowHint | Qt.window | Qt.WindowSystemmenuHint |
            Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint
+
 
     // 窗口拖动区域
     Item {
@@ -41,6 +42,7 @@ Window {
     property int playMode: 0
     property bool listExpanded: false
     property bool controlPanelVisible: false
+    property bool showRecentSongs: false
 
     // 播放模式图标路径
     property var playModeIcons: [
@@ -95,6 +97,10 @@ Window {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.margins: 20
+
+        onShowRecentSongs: {
+                window.showRecentSongs = true;
+        }
     }
 
     Qright {
@@ -117,6 +123,14 @@ Window {
         }
         lrcReader: lrcReader
         Layout.preferredHeight: listExpanded ? implicitHeight : 0
+
+        showRecentSongs: window.showRecentSongs
+            onShowRecentSongsChanged: {
+                if (showRecentSongs) {
+                    window.showFavoritesOnly = false;
+                    window.listExpanded = true;
+                }
+            }
     }
 
     Qbottom {
@@ -158,6 +172,7 @@ Window {
     }
 
     Component.onCompleted: {
+        console.log("Window component completed")
         folderModel.statusChanged.connect(function() {
             if (folderModel.status === FolderListModel.Ready && folderModel.count > 0) {
                 const defaultSong = "Go_Beyond_Andy.mp3";
