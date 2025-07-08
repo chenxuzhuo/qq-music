@@ -19,7 +19,14 @@
         <file>image/04.jpg</file>
         <file>image/next.png</file>
         <file>image/plus.png</file>
-        <file>image/close.png</file> 
-        <file>image/toupin.png</file> 
-        </qresource>
+        <file>image/full-love.png</file>
+        <file>image/background2.jpg</file>
+        <file>image/circal.png</file>
+        <file>image/random.png</file>
+        <file>image/right.png</file>
+        <file>image/let.png</file>
+        <file>image/search.png</file>
+        <file>image/close.png</file>
+        <file>image/toupin.png</file>
+    </qresource>
 </RCC>

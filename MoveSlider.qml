@@ -1,3 +1,6 @@
+//writed by Chengyan Yao
+//Synchronization of the progress bar and music playback
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -13,7 +16,7 @@ Item {
         Layout.alignment: Qt.AlignVCenter
 
         Label {
-            text: currentPlayingPath ? formatFilePath(currentPlayingPath) : ""
+            text: currentPlayingPath ? funct.formatFilePath(currentPlayingPath) : ""
             elide: Text.ElideMiddle
             Layout.preferredWidth: 150
             font.bold: true
@@ -22,7 +25,7 @@ Item {
 
         Text {
             id: timeText
-            text: formatTime(player.position)
+            text: funct.formatTime(player.position)
             font.pixelSize: 12
             Layout.preferredWidth: 30
         }
@@ -35,47 +38,24 @@ Item {
             enabled: player.seekable
             onMoved: player.position = value
             Layout.fillWidth: true
-
-            /*id: sliders
-            height: 25
-            from: 0
-            to: player.duration
-            value: player.position
-            live: true  // 关键：启用实时更新
-
-            // 处理按压状态
-            onPressedChanged: {
-                if (pressed) {
-                    updateTimer.stop()
-                } else {
-                    player.position = value
-                    updateTimer.start()
-                }
-            }
-
-            // 处理点击跳转（Qt 5.15+）
-            onMoved: {
-                if (!pressed) {  // 处理点击事件
-                    player.position = value
-                }
-            }
-
-            // 实时更新处理
-            Connections {
-                target: player
-                function onPositionChanged() {
-                    if (!progressSlider.pressed) {
-                        progressSlider.value = player.position
-                    }
-                }
-            }*/
         }
 
         Label {
             id: text
-            text: formatTime(player.duration)
+            text: funct.formatTime(player.duration)
             font.pixelSize: 12
             Layout.preferredWidth: 30
+        }
+
+        // 播放速度选择器
+        ComboBox {
+            id: speedSelector
+            model: [0.5, 0.8, 1.0, 1.2, 1.5, 2.0]
+            currentIndex: 2  // 默认1倍速
+            onActivated: {
+                player.playbackRate = currentText
+                progressSlider.value = currentText
+            }
         }
 
         Timer {
@@ -89,17 +69,6 @@ Item {
                 }
             }
         }
-    }
-
-    function formatTime(millis) {
-        const seconds = Math.floor(millis / 1000)
-        const minutes = Math.floor(seconds / 60)
-        const secs = seconds % 60
-        return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-    }
-
-    function formatFilePath(path) {
-        return path.toString().replace("file://", "").replace(/^.*\//, "")
     }
 }
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.28.2)
 
 project(QQMusic VERSION 0.1 LANGUAGES CXX)
 
@@ -12,23 +12,34 @@ qt_add_executable(appQQMusic
 )
 
 qt_add_qml_module(appQQMusic
-    URI QQMusic
+    URI "se.lrcfilereader"
     VERSION 1.0
-    QML_FILES main.qml
+    QML_FILES Main.qml
     RESOURCES source.qrc
     QML_FILES Player.qml
     QML_FILES MoveSlider.qml
     QML_FILES Qbottom.qml
     QML_FILES Volume.qml
+    QML_FILES
 
-    QML_FILES Left.qml
-    QML_FILES Right.qml
+    QML_FILES
+    QML_FILES
+    QML_FILES
+    QML_FILES Qleft.qml
+    QML_FILES Qright.qml
+
+    QML_FILES Functions.qml
+    SOURCES lrcfilereader.h lrcfilereader.cpp
+    QML_FILES
+    QML_FILES
+    QML_FILES
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 set_target_properties(appQQMusic PROPERTIES
+    AUTORCC TRUE
 #    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appQQMusic
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}

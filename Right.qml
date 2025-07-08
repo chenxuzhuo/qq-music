@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import QtMultimedia
 import Qt.labs.platform   // 文件对话框需要
-
+import Qt.labs.settings
 Rectangle {
     id: rightRect
     height: 800
@@ -17,10 +17,46 @@ Rectangle {
     property string currentPlayingPath
     property bool isPlaying
     property bool listExpanded: true
+    property var searchHistory: [] // 存储搜索历史
+    property int maxHistoryItems: 5 // 最大历史记录数量
 
+    // 添加设置对象用于存储历史记录
+    Settings {
+        id: searchSettings
+        category: "searchHistory"
+    }
     signal playMusic(string filePath)
 
+    // 搜索历史相关函数
+    function addSearchHistory(text) {
+        if (text && text.trim() !== "") {
+            // 移除已存在的相同搜索内容
+            searchHistory = searchHistory.filter(function(item) {
+                return item.toLowerCase() !== text.toLowerCase();
+            });
 
+            // 添加到历史记录开头
+            searchHistory.unshift(text.trim());
+
+            // 限制历史记录数量
+            if (searchHistory.length > maxHistoryItems) {
+                searchHistory = searchHistory.slice(0, maxHistoryItems);
+            }
+
+            // 保存到本地存储
+            saveSearchHistory();
+        }
+    }
+
+    function loadSearchHistory() {
+        var savedHistory = searchSettings.value("history", "[]");
+        if (savedHistory) {
+            searchHistory = JSON.parse(savedHistory);
+        }
+    }
+    function saveSearchHistory() {
+        searchSettings.setValue("history", JSON.stringify(searchHistory));
+    }
 
     // 顶部控制栏
     Rectangle {
@@ -89,49 +125,110 @@ Rectangle {
                     }
                 }
                 //搜索框
-                TextField{
-                    id:seachTextField
-                    height:30
-                    width: 240
-                    leftPadding: 40
-                    placeholderText:"搜索"
-                    placeholderTextColor:"#2b2b31"
-                    color: "#333333"  // 修改输入文字颜色
-                    font.pixelSize:16
-                    background:Rectangle {
-                        anchors.fill:parent
-                        Rectangle{
+                Column {
+                    id: searchColumn
+
+                    TextField{
+                        id:seachTextField
+                        height:30
+                        width: 240
+                        leftPadding: 40
+                        placeholderText:"搜索"
+                        placeholderTextColor:"#2b2b31"
+                        color: "#333333"  // 修改输入文字颜色
+                        font.pixelSize:16
+                        background:Rectangle {
+                            anchors.fill:parent
+                            Rectangle{
+                                anchors.fill: parent
+                                anchors.margins: 1
+                                radius: 8
+                                Image {
+                                    id: serchIcon
+                                    scale: 0.7
+                                    height:30
+                                    width:30
+                                    anchors.verticalCenter: parent
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 6
+                                    source: "file:///root/qq-music/image/search.png"
+                                }
+                            }
+                        }
+
+                        onAccepted: {
+                            // 按下回车键时添加到历史记录
+                            addSearchHistory(text);
+                            // 这里可以添加实际搜索逻辑
+                            //console.log("搜索:", text);
+                        }
+
+                        onFocusChanged: {
+                            if (focus) {
+                                // 获得焦点时显示历史记录
+                                searchHistoryPopup.visible = searchHistory.length > 0;
+                            } else {
+                                // 失去焦点时延迟隐藏，以便点击历史记录
+                                searchHistoryPopup.visible = false;
+                            }
+                        }
+                    }
+
+                    // 搜索历史下拉框
+                    Rectangle {
+                        id: searchHistoryPopup
+                        visible: false
+                        width: seachTextField.width
+                        height: Math.min(searchHistory.length * 30, 150)
+                        color: "white"
+                        radius: 5
+                        border.color: "#d0d0d0"
+                        anchors {
+                            top: seachTextField.bottom
+                            left: seachTextField.left
+                            margins: 2
+                        }
+                        z: 100  // 确保显示在最上层
+
+                        ListView {
+                            id: historyListView
                             anchors.fill: parent
-                            anchors.margins: 1
-                            radius: 8
-                            Image {
-                                id: serchIcon
-                                scale: 0.7
-                                height:30
-                                width:30
-                                anchors.verticalCenter: parent
-                                anchors.left: parent.left
-                                anchors.leftMargin: 6
-                                source: "file:///root/qq-music/image/search.png"
+                            model: searchHistory
+                            delegate: Rectangle {
+                                id: historyItem
+                                width: parent.width
+                                height: 30
+                                color: hovered ? "#f0f0f0" : "white"
+                                radius: 3
+
+                                Label {
+                                    text: modelData
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 10
+                                    color: "#333333"
+                                    font.pixelSize: 14
+                                }
+
+                                HoverHandler {
+                                    id: hoverHandler
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        seachTextField.text = modelData;
+                                        searchHistoryPopup.visible = false;
+                                        // 添加到历史记录（置顶）
+                                        addSearchHistory(modelData);
+                                    }
+                                }
                             }
                         }
                     }
                 }
-                //听歌识曲
-                Rectangle{
-                    id:lisenRect
-                    width: 24
-                    height: 35
-                    color: "transparent"
-                    border.color:parent
-                    Image {
-                        id: lisen
-                        height:30
-                        width:30
-                        anchors.centerIn: parent
-                        source: "file:///root/qq-music/image/qqmusic.png"
-                    }
-                }
+
 
             }
         }
@@ -238,8 +335,6 @@ Rectangle {
         spacing: 5
         visible: listExpanded
 
-
-
         delegate: Rectangle {
             id: fileDelegate
             width: fileListView.width
@@ -278,7 +373,6 @@ Rectangle {
             }
 
             HoverHandler {
-                id: hoverHandler
                 onHoveredChanged: fileDelegate.isHovered = hovered
             }
 
@@ -307,5 +401,10 @@ Rectangle {
 
     function formatFilePath(path) {
         return path.toString().replace("file://", "").replace(/^.*\//, "")
+    }
+
+    // 页面加载时加载搜索历史
+    Component.onCompleted: {
+        loadSearchHistory();
     }
 }
