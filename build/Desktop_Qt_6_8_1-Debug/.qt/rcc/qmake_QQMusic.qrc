@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/QQMusic">
-    <file alias="qmldir">/root/Item/qq-music/build/Desktop_Qt_6_8_1-Debug/QQMusic/qmldir</file>
-  </qresource>
-</RCC>
-
