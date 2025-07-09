@@ -28,5 +28,14 @@
         <file>image/search.png</file>
         <file>image/close.png</file>
         <file>image/toupin.png</file>
+        <file>music/Justin Timberlake - Five Hundred Miles.lrc</file>
+        <file>music/Justin Timberlake - Five Hundred Miles.mp3</file>
+        <file>music/Go_Beyond_Andy.mp3</file>
+        <file>music/Go_Beyond_Andy.lrc</file>
+        <file>music/渔舟唱晚.mp3</file>
+        <file>music/恋恋风尘.mp3</file>
+        <file>music/恋恋风尘.lrc</file>
+        <file>music/海阔天空.mp3</file>
+        <file>music/海阔天空.lrc</file>
     </qresource>
 </RCC>

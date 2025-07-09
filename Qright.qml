@@ -1,4 +1,3 @@
-//chenxuzhuo about history and 顶部控制栏
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -17,7 +16,6 @@ Rectangle {
     clip: true
 
     property FolderListModel folderModel
-
     property string currentPlayingPath
     property bool isPlaying
     property bool listExpanded: true
@@ -28,7 +26,6 @@ Rectangle {
     property var player
     property var lrcReader
     property var searchSettings: LocalStorage.openDatabaseSync("MusicPlayer", "1.0", "Search history", 100000)
-    property ListModel proxyModel: ListModel {} // 代理模型，用于排序后展示搜索结果
 
     property ListModel lyricModel: ListModel {}
     property int currentLine: -1
@@ -39,56 +36,50 @@ Rectangle {
     signal loadInitialFile(string filename)
 
     // 初始化数据库表
-    function initDatabase() {
-        searchSettings.transaction(
-            function(tx) {
-                tx.executeSql('CREATE TABLE IF NOT EXISTS search_history (id INTEGER PRIMARY KEY AUTOINCREMENT, query TEXT)');
-            }
-        );
-    }
+       function initDatabase() {
+           searchSettings.transaction(
+               function(tx) {
+                   tx.executeSql('CREATE TABLE IF NOT EXISTS search_history (id INTEGER PRIMARY KEY AUTOINCREMENT, query TEXT)');
+               }
+           );
+       }
+       // 修正搜索结果更新逻辑
+               function updateSearchResults(query) {
+                   proxyModel.clear();
+                   if (!query || query.trim() === "" || !folderModel || folderModel.count === 0) {
+                       return;
+                   }
+
+                   const queryLower = query.trim().toLowerCase();
+                   let matchCount = 0;
+
+                   // 遍历所有歌曲，匹配文件名（不区分大小写）
+                   for (let i = 0; i < folderModel.count; i++) {
+                       const item = folderModel.get(i);
+                       const fileName = item.fileName.toLowerCase();
+
+                       if (fileName.includes(queryLower)) {
+                           proxyModel.append({
+                               fileName: item.fileName,
+                               filePath: item.filePath
+                           });
+                           matchCount++;
+                       }
+                   }
+                   console.log("搜索完成，匹配到", matchCount, "首歌曲");
+               }
+
+             function findIndexInFolderModel(filePath) {
+                 const normalizedPath = filePath.replace("file://", "").toLowerCase();
+                 for (let i = 0; i < folderModel.count; i++) {
+                     const modelPath = folderModel.get(i, "filePath").replace("file://", "").toLowerCase();
+                     if (modelPath === normalizedPath) {
+                         return i;
+                     }
+                 }
+                 return -1;
+             }
     // 搜索历史相关函数
-    function searchMusic(query) {
-        proxyModel.clear(); // 清空代理模型
-
-        // 1. 获取MP3文件（过滤其他格式）
-        const mp3Files = [];
-        for (let i = 0; i < folderModel.count; i++) {
-            const file = folderModel.get(i);
-            // 保留后缀为.mp3的文件（不区分大小写）
-            if (file.fileName.toLowerCase().endsWith(".mp3")) {
-                mp3Files.push({
-                    fileName: file.fileName,
-                    filePath: file.filePath
-                });
-            }
-        }
-
-        // 2. 无搜索内容时，按原始顺序显示MP3文件
-        if (!query || query.trim() === "") {
-            mp3Files.forEach(file => {
-                proxyModel.append(file);
-            });
-            return;
-        }
-
-        // 3. 有搜索内容时，匹配的MP3文件置顶
-        const queryLower = query.toLowerCase();
-        const matchedMp3 = []; // 匹配的MP3（放前面）
-        const unmatchedMp3 = []; // 不匹配的MP3（放后面）
-
-        mp3Files.forEach(file => {
-            const fileNameLower = file.fileName.toLowerCase();
-            if (fileNameLower.includes(queryLower)) {
-                matchedMp3.push(file);
-            } else {
-                unmatchedMp3.push(file);
-            }
-        });
-
-        // 4. 按“匹配项→非匹配项”顺序添加到代理模型
-        matchedMp3.forEach(file => proxyModel.append(file));
-        unmatchedMp3.forEach(file => proxyModel.append(file));
-    }
     function addSearchHistory(text) {
         if (text && text.trim() !== "") {
             // 移除已存在的相同搜索内容
@@ -110,31 +101,15 @@ Rectangle {
     }
 
     function loadSearchHistory() {
-        searchHistory = [];
-        searchSettings.transaction(
-            function(tx) {
-                var result = tx.executeSql('SELECT query FROM search_history ORDER BY id DESC LIMIT ?', [maxHistoryItems]);
-                for (var i = 0; i < result.rows.length; i++) {
-                    searchHistory.push(result.rows.item(i).query);
-                }
-            }
-        );
+        var savedHistory = searchSettings.value("history", "[]");
+        if (savedHistory) {
+            searchHistory = JSON.parse(savedHistory);
+        }
     }
 
     function saveSearchHistory() {
-        searchSettings.transaction(
-            function(tx) {
-                // 清空现有记录
-                tx.executeSql('DELETE FROM search_history');
-
-                // 插入新记录
-                for (var i = 0; i < searchHistory.length; i++) {
-                    tx.executeSql('INSERT INTO search_history (query) VALUES (?)', [searchHistory[i]]);
-                }
-            }
-        );
+        searchSettings.setValue("history", JSON.stringify(searchHistory));
     }
-
 
     // 解析歌词文件内容
     function parseLyrics(fileContent) {
@@ -290,7 +265,6 @@ Rectangle {
                         // 按下回车键时添加到历史记录
                         addSearchHistory(text);
                         saveSearchHistory();
-
                         // 这里可以添加实际搜索逻辑
                         searchMusic(text)
                     }
@@ -349,7 +323,6 @@ Rectangle {
                                 color: "#333333"
                                 font.pixelSize: 14
                             }
-
                             Image {
                                 id: deleteButton
                                 source: "qrc:/image/close.png"
@@ -378,7 +351,6 @@ Rectangle {
                                     }
                                 }
                             }
-
                             HoverHandler {
                                 id: hoverHandler
                             }
@@ -438,7 +410,7 @@ Rectangle {
                 TapHandler {
                     onTapped: {
                         if (rightRect.window) {
-                rightRect.window.visibility = Window.Minimized;
+                            rightRect.window.visibility = Window.Minimized;
                         } else {
                             console.error("无法找到窗口对象")
                         }
@@ -473,7 +445,6 @@ Rectangle {
                         }
                     }
                 }
-
             }
 
             // 关闭按钮
@@ -657,7 +628,7 @@ Rectangle {
 
         width:400
         clip: true
-        model: proxyModel
+        model: folderModel
         spacing: 5
         visible: listExpanded
 
@@ -755,7 +726,6 @@ Rectangle {
         initDatabase();
         loadSearchHistory();
         folderModel.setNameFilters(["*.mp3", "*.MP3"]); // 兼容大小写
-        folderModel.setRootPath("/root/tmp/");
-        searchMusic(""); // 触发代理模型初始化，显示MP3
+        folderModel.setRootPath("qrc:/music");
     }
 }

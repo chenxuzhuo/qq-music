@@ -17,7 +17,7 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.window | Qt.WindowSystemmenuHint |
            Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint
 
-    property Window mainWindow: window
+    property Window mainWindow: this
     // 窗口拖动区域
     Item {
         id: dragArea
@@ -100,6 +100,7 @@ Window {
 
     Qright {
         id: rightRect
+        //height: 800
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.left: leftRect.right
@@ -117,13 +118,13 @@ Window {
         }
         lrcReader: lrcReader
         Layout.preferredHeight: listExpanded ? implicitHeight : 0
-        window: window.mainWindow
     }
 
     Qbottom {
         id: bottomRect
-        anchors.right: parent.right
         height: 200
+        //anchors.top: rightRect.bottom
+        anchors.right: parent.right
         anchors.left: leftRect.right
         anchors.bottom: parent.bottom
         isFavorite: {
