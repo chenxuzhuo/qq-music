@@ -6,8 +6,7 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import Qt.labs.folderlistmodel
 import QtMultimedia
-
-
+import se.lrcfilereader
 Window {
     id: window
     width: 1317
@@ -17,6 +16,7 @@ Window {
     flags: Qt.FramelessWindowHint | Qt.window | Qt.WindowSystemmenuHint |
            Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint
 
+    property Window mainWindow: window
 
     // 窗口拖动区域
     Item {
@@ -89,112 +89,100 @@ Window {
         }
     }
 
-    //三个主要窗口
     Qleft {
-        id:leftRect
-        width: 250
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.margins: 20
+           id:leftRect
+           width: 250
+           anchors.top: parent.top
+           anchors.bottom: parent.bottom
+           anchors.left: parent.left
+           anchors.margins: 20
+       }
 
-        onShowRecentSongs: {
-                window.showRecentSongs = true;
-        }
-    }
+       Qright {
+           id: rightRect
+           anchors.top: parent.top
+           anchors.right: parent.right
+           anchors.left: leftRect.right
+           anchors.bottom: bottomRect.top
+           color: "#2C2C2C"
+           folderModel: folderModel
+           currentPlayingPath: window.currentPlayingPath
+           isPlaying: window.isPlaying
+           listExpanded: window.listExpanded
+           controlPanelVisible: window.controlPanelVisible
+           player: player
+           onPlayMusic: (filePath) => {
+               funct.playMusic(filePath)
+               window.currentPlayingPath = filePath
+           }
+           lrcReader: lrcReader
+           //Layout.preferredHeight: listExpanded ? implicitHeight : 0
+           window: window.mainWindow
+       }
 
-    Qright {
-        id: rightRect
-        height: 800
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.left: leftRect.right
-        anchors.bottom: bottomRect.top
-        color: "#2C2C2C"
-        folderModel: folderModel
-        currentPlayingPath: window.currentPlayingPath
-        isPlaying: window.isPlaying
-        listExpanded: window.listExpanded
-        controlPanelVisible: window.controlPanelVisible
-        player: player
-        onPlayMusic: (filePath) => {
-            funct.playMusic(filePath)
-            window.currentPlayingPath = filePath
-        }
-        lrcReader: lrcReader
-        Layout.preferredHeight: listExpanded ? implicitHeight : 0
+       Qbottom {
+           id: bottomRect
+           anchors.right: parent.right
+           height: 200
+           anchors.left: leftRect.right
+           anchors.bottom: parent.bottom
+           isFavorite: {
+               if (!currentPlayingPath) return false;
+               const normalizedPath = currentPlayingPath.replace("file://", "");
+               return leftRect.favoriteSongs.includes(normalizedPath);
+           }
+           player: player
+           currentPlayingPath: window.currentPlayingPath
+           playMode: window.playMode
+           playModeIcons: window.playModeIcons
+           onPlayNext: funct.playNext()
+           onPlayPrevious: funct.playPrevious()
+           onTogglePlayPause: funct.togglePlayPause()
+           onChangePlayMode: window.playMode = (window.playMode + 1) % 3
+           listExpanded: window.listExpanded
+           controlPanelVisible: window.controlPanelVisible
+           onToggleVisible: window.controlPanelVisible = !window.controlPanelVisible
+           onToggleList: window.listExpanded = !window.listExpanded
+           onAddFavorite: (filePath) => leftRect.addFavorite(filePath)
+           onRemoveFavorite: (filePath) => leftRect.removeFavorite(filePath)
+       }
 
-        showRecentSongs: window.showRecentSongs
-            onShowRecentSongsChanged: {
-                if (showRecentSongs) {
-                    window.showFavoritesOnly = false;
-                    window.listExpanded = true;
-                }
-            }
-    }
+       FolderListModel {
+           id: folderModel
+           folder: "qrc:/music"
+           nameFilters: ["*.mp3"]
+           showDirs: false
+       }
 
-    Qbottom {
-        id: bottomRect
-        anchors.top: rightRect.bottom
-        anchors.right: parent.right
-        anchors.left: leftRect.right
-        anchors.bottom: parent.bottom
-        isFavorite: {
-            if (!currentPlayingPath) return false;
-            const normalizedPath = currentPlayingPath.replace("file://", "");
-            return leftRect.favoriteSongs.includes(normalizedPath);
-        }
-        player: player
-        currentPlayingPath: window.currentPlayingPath
-        playMode: window.playMode
-        playModeIcons: window.playModeIcons
-        onPlayNext: funct.playNext()
-        onPlayPrevious: funct.playPrevious()
-        onTogglePlayPause: funct.togglePlayPause()
-        onChangePlayMode: window.playMode = (window.playMode + 1) % 3
-        listExpanded: window.listExpanded
-        controlPanelVisible: window.controlPanelVisible
-        onToggleVisible: window.controlPanelVisible = !window.controlPanelVisible
-        onToggleList: window.listExpanded = !window.listExpanded
-        onAddFavorite: (filePath) => leftRect.addFavorite(filePath)
-        onRemoveFavorite: (filePath) => leftRect.removeFavorite(filePath)
-    }
+       Functions {
+           id: funct
 
-    FolderListModel {
-        id: folderModel
-        folder: "file:///root/tmp"
-        nameFilters: ["*.mp3"]
-        showDirs: false
-    }
+       }
 
-    Functions {
-        id: funct
-    }
+       Component.onCompleted: {
+           folderModel.statusChanged.connect(function() {
+               if (folderModel.status === FolderListModel.Ready && folderModel.count > 0) {
+                   const defaultSong = "Go_Beyond_Andy.mp3";
+                   let foundIndex = -1;
 
-    Component.onCompleted: {
-        console.log("Window component completed")
-        folderModel.statusChanged.connect(function() {
-            if (folderModel.status === FolderListModel.Ready && folderModel.count > 0) {
-                const defaultSong = "Go_Beyond_Andy.mp3";
-                let foundIndex = -1;
+                   for (let i = 0; i < folderModel.count; i++) {
+                       const fileName = folderModel.get(i, "fileName");
+                       if (fileName === defaultSong) {
+                           foundIndex = i;
+                           break;
+                       }
+                   }
 
-                for (let i = 0; i < folderModel.count; i++) {
-                    const fileName = folderModel.get(i, "fileName");
-                    if (fileName === defaultSong) {
-                        foundIndex = i;
-                        break;
-                    }
-                }
+                   const playIndex = foundIndex >= 0 ? foundIndex : 0;
+                   const filePath = folderModel.get(playIndex, "filePath")
+                   funct.playMusic(filePath, true);
+                   window.currentPlayingPath = filePath
+                   const lrcPath = filePath.replace(/\.mp3$/, ".lrc");
+                   lrcReader.readFile(lrcPath);
+               }
+           });
+       }
+   }
 
-                const playIndex = foundIndex >= 0 ? foundIndex : 0;
-                const filePath = folderModel.get(playIndex, "filePath")
-                funct.playMusic(filePath, true);
-                window.currentPlayingPath = filePath
-                player.stop();
-                const lrcPath = filePath.replace(/\.mp3$/, ".lrc");
-                lrcReader.readFile(lrcPath);
-            }
-        });
-    }
-}
+
 

@@ -4,31 +4,112 @@ import QtQuick.Layouts
 import Qt.labs.folderlistmodel
 import QtMultimedia
 import Qt.labs.platform   // 文件对话框需要
+import QtQuick.LocalStorage
+import QtQuick.Window
 
 Rectangle {
     id: rightRect
     height: 800
     color: "#2C2C2C"
-    property bool showFavoritesOnly: false;
+
     implicitHeight: listExpanded ? Math.min(fileListView.contentHeight + 20, 300) : 0
     clip: true
 
     property FolderListModel folderModel
     property string currentPlayingPath
     property bool isPlaying
-    property bool listExpanded: false
+    property bool listExpanded: true
+    property var searchHistory: [] // 存储搜索历史
+    property int maxHistoryItems: 5 // 最大历史记录数量
+    property bool showFavoritesOnly: false;
     property bool controlPanelVisible: false
     property var player
     property var lrcReader
+    property var searchSettings: LocalStorage.openDatabaseSync("MusicPlayer", "1.0", "Search history", 100000)
 
     property ListModel lyricModel: ListModel {}
     property int currentLine: -1
     property alias parsedLyricView: parsedLyricView
 
-    property bool showRecentSongs: false
-
+    property var window: Qt.application.activeWindow
     signal playMusic(string filePath)
     signal loadInitialFile(string filename)
+
+    // 初始化数据库表
+       function initDatabase() {
+           searchSettings.transaction(
+               function(tx) {
+                   tx.executeSql('CREATE TABLE IF NOT EXISTS search_history (id INTEGER PRIMARY KEY AUTOINCREMENT, query TEXT)');
+               }
+           );
+       }
+       // 修正搜索结果更新逻辑
+               function updateSearchResults(query) {
+                   proxyModel.clear();
+                   if (!query || query.trim() === "" || !folderModel || folderModel.count === 0) {
+                       return;
+                   }
+
+                   const queryLower = query.trim().toLowerCase();
+                   let matchCount = 0;
+
+                   // 遍历所有歌曲，匹配文件名（不区分大小写）
+                   for (let i = 0; i < folderModel.count; i++) {
+                       const item = folderModel.get(i);
+                       const fileName = item.fileName.toLowerCase();
+
+                       if (fileName.includes(queryLower)) {
+                           proxyModel.append({
+                               fileName: item.fileName,
+                               filePath: item.filePath
+                           });
+                           matchCount++;
+                       }
+                   }
+                   console.log("搜索完成，匹配到", matchCount, "首歌曲");
+               }
+
+             function findIndexInFolderModel(filePath) {
+                 const normalizedPath = filePath.replace("file://", "").toLowerCase();
+                 for (let i = 0; i < folderModel.count; i++) {
+                     const modelPath = folderModel.get(i, "filePath").replace("file://", "").toLowerCase();
+                     if (modelPath === normalizedPath) {
+                         return i;
+                     }
+                 }
+                 return -1;
+             }
+    // 搜索历史相关函数
+    function addSearchHistory(text) {
+        if (text && text.trim() !== "") {
+            // 移除已存在的相同搜索内容
+            searchHistory = searchHistory.filter(function(item) {
+                return item.toLowerCase() !== text.toLowerCase();
+            });
+
+            // 添加到历史记录开头
+            searchHistory.unshift(text.trim());
+
+            // 限制历史记录数量
+            if (searchHistory.length > maxHistoryItems) {
+                searchHistory = searchHistory.slice(0, maxHistoryItems);
+            }
+
+            // 保存到本地存储
+            saveSearchHistory();
+        }
+    }
+
+    function loadSearchHistory() {
+        var savedHistory = searchSettings.value("history", "[]");
+        if (savedHistory) {
+            searchHistory = JSON.parse(savedHistory);
+        }
+    }
+
+    function saveSearchHistory() {
+        searchSettings.setValue("history", JSON.stringify(searchHistory));
+    }
 
     // 解析歌词文件内容
     function parseLyrics(fileContent) {
@@ -83,6 +164,7 @@ Rectangle {
         return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}.${String(msec).padStart(2, '0')}`;
     }
 
+    // 顶部控制栏
     Rectangle {
         id: rec
         anchors {
@@ -90,486 +172,560 @@ Rectangle {
             right: parent.right
             top: parent.top
         }
-        height: 60
-        color: "#2C2C2C"
+        height: 50
+        color: "#d0d0d0"
 
-        RowLayout {
-            anchors {
-                right: parent.right
-                verticalCenter: parent.verticalCenter
-                rightMargin: 0.02 * window.width
-            }
-            spacing: 15
-
-            Button {
-                id: exitButton
-                icon.name: "dialog-error"
-                width: 32
-                height: 32
-                background: Rectangle {
-                    color: "transparent"
-                    border.width: 0
+        Row{
+            id:searchRow
+            spacing: 10
+            anchors.left: parent.left
+            anchors.leftMargin: 36
+            anchors.verticalCenter: othersRow.verticalCenter
+            //返回
+            Rectangle{
+                id:backForwardrect
+                width: 24
+                height: 35
+                radius: 4
+                color: "transparent"
+                border.color:"#2b2b31"
+                Image {
+                    id: bake
+                    height:30
+                    width:30
+                    anchors.centerIn: parent
+                    source: "qrc:/image/let.png"
                 }
-                onClicked: Qt.quit()
+            }
+            //前进
+            Rectangle{
+                id:forwardrect
+                width: 24
+                height: 35
+                radius: 4
+                color: "transparent"
+                border.color:"#2b2b31"
+                Image {
+                    id: forward
+                    height:30
+                    width:30
+                    anchors.centerIn: parent
+                    source: "qrc:/image/right.png"
+                }
+            }
+            //刷新
+            Rectangle{
+                id:loopRect
+                width: 24
+                height: 35
+                radius: 4
+                color: "transparent"
+                border.color:"#2b2b31"
+                Image {
+                    id: loop
+                    height:30
+                    width:30
+                    anchors.centerIn: parent
+                    source: "qrc:/image/order.png"
+                }
+            }
+            //搜索框
+            Column {
+                id: searchColumn
+
+                TextField{
+                    id:searchTextField
+                    height:30
+                    width: 240
+                    leftPadding: 40
+                    placeholderText:"搜索"
+                    placeholderTextColor:"#2b2b31"
+                    color: "#333333"  // 修改输入文字颜色
+                    font.pixelSize:16
+                    background:Rectangle {
+                        anchors.fill:parent
+                        Rectangle{
+                            anchors.fill: parent
+                            anchors.margins: 1
+                            radius: 8
+                            Image {
+                                id: serchIcon
+                                scale: 0.7
+                                height:30
+                                width:30
+                                anchors.verticalCenter: parent
+                                anchors.left: parent.left
+                                anchors.leftMargin: 6
+                                source: "qrc:/image/search.png"
+                            }
+                        }
+                    }
+
+                    onAccepted: {
+                        // 按下回车键时添加到历史记录
+                        addSearchHistory(text);
+                        saveSearchHistory();
+                        // 这里可以添加实际搜索逻辑
+                        searchMusic(text)
+                    }
+
+                    onFocusChanged: {
+                        if (focus) {
+                            // 获得焦点时显示历史记录
+                            searchHistoryPopup.visible = searchHistory.length > 0;
+                        } else {
+                            // 失去焦点时延迟隐藏，以便点击历史记录
+                            searchHistoryPopup.visible = false;
+                        }
+                    }
+                    TapHandler {
+                        onTapped: {
+                            // 点击搜索框时显示历史记录
+                            searchHistoryPopup.visible = searchHistory.length > 0;
+                        }
+                    }
+                }
+
+                // 搜索历史下拉框
+                Rectangle {
+                    id: searchHistoryPopup
+                    visible: false
+                    width: searchTextField.width
+                    height: Math.min(searchHistory.length * 30, 150)
+                    color: "white"
+                    radius: 5
+                    border.color: "#d0d0d0"
+                    anchors {
+                        top: searchTextField.bottom
+                        left: searchTextField.left
+                        margins: 2
+                    }
+                    z: 100  // 确保显示在最上层
+
+                    ListView {
+                        id: historyListView
+                        anchors.fill: parent
+                        model: searchHistory
+                        delegate: Rectangle {
+                            id: historyItem
+                            width: parent.width
+                            height: 30
+                            color: hovered ? "#f0f0f0" : "white"
+                            radius: 3
+
+                            property bool hovered: hoverHandler.hovered  // 绑定 HoverHandler 的状态
+
+                            Label {
+                                text: modelData
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: parent.left
+                                anchors.leftMargin: 10
+                                color: "#333333"
+                                font.pixelSize: 14
+                            }
+                            Image {
+                                id: deleteButton
+                                source: "qrc:/image/close.png"
+                                width: 16
+                                height: 16
+                                anchors {
+                                    right: parent.right
+                                    rightMargin: 10
+                                    verticalCenter: parent.verticalCenter
+                                }
+                                visible: hovered
+                                opacity: hovered ? 1.0 : 0.0
+                                Behavior on opacity { NumberAnimation { duration: 200 } }
+                                TapHandler {
+                                    onTapped: {
+                                        // 从数组中删除
+                                        searchHistory = searchHistory.filter(function(item) {
+                                            return item !== modelData;
+                                        });
+                                        // 更新数据库
+                                        saveSearchHistory();
+                                        // 如果没有历史记录了，隐藏弹出框
+                                        if (searchHistory.length === 0) {
+                                            searchHistoryPopup.visible = false;
+                                        }
+                                    }
+                                }
+                            }
+                            HoverHandler {
+                                id: hoverHandler
+                            }
+                            TapHandler {
+
+                                onTapped: {
+                                    searchTextField.text = modelData;
+                                    searchHistoryPopup.visible = false;
+                                    addSearchHistory(modelData);  // 置顶历史记录
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        Button {
-            visible: window.showFavoritesOnly || showRecentSongs
-            text: qsTr("返回全部歌曲")
-            onClicked: {
-                window.showFavoritesOnly = false;
-                showRecentSongs = false;
+        Row{
+            id:miniRow
+            spacing:15
+            anchors.verticalCenter:parent.verticalCenter
+            anchors.right:parent.right
+            anchors.rightMargin:0.02*window.width
+
+            // 投屏按钮
+            Image {
+                id: miniImg
+                anchors.verticalCenter:parent.verticalCenter
+                source: "qrc:/image/toupin.png"
+
+                height:30
+                width:30
+
+                HoverHandler {
+                    id: miniImgHover
+                }
+
+                TapHandler {
+                    onTapped: {
+                        //waiting
+                    }
+                }
             }
-            anchors {
-                left: parent.left
-                verticalCenter: parent.verticalCenter
-                leftMargin: 15
+
+            // 最小化按钮
+            Rectangle{
+                id:miniRect
+                width:30
+                height:10
+                anchors.verticalCenter:parent.verticalCenter
+                color:"#75777f"
+
+                HoverHandler {
+                    id:minniHover
+                }
+
+                TapHandler {
+                    onTapped: {
+                        if (rightRect.window) {
+                            rightRect.window.visibility = Window.Minimized;
+                        } else {
+                            console.error("无法找到窗口对象")
+                        }
+                    }
+                }
+            }
+
+            // 最大化/恢复按钮
+            Rectangle{
+                id:maxRect
+                width:20
+                height:width
+                border.width:1
+                border.color:"#75777f"
+                color:"transparent"
+                anchors.verticalCenter:parent.verticalCenter
+
+                HoverHandler {
+                    id: maxHover
+                }
+
+                TapHandler {
+                    onTapped: {
+                        if (window) {
+                            if (window.maximized) {
+                                window.showNormal();  // 恢复
+                            } else {
+                                window.showMaximized();  // 最大化
+                            }
+                        } else {
+                            console.error("无法找到窗口对象");
+                        }
+                    }
+                }
+            }
+
+            // 关闭按钮
+            Image {
+                id: closeImg
+                source: "qrc:/image/close.png"
+                height:30
+                width:30
+
+                HoverHandler {
+                    id: closeHover
+                    property color originalColor: closeImg.color
+                }
+
+                TapHandler {
+                    onTapped: Qt.quit()
+                }
             }
         }
     }
 
-    // 内容区域 - 使用StackLayout管理不同视图
-    StackLayout {
-        id: contentStack
-        anchors {
-            top: rec.bottom
-            left: parent.left
-            right: parent.right
-            bottom: parent.bottom
-        }
-        currentIndex: {
-            if (controlPanelVisible) return 0; // 控制面板
-            if (listExpanded && showRecentSongs) return 1; // 最近播放列表
-            if (listExpanded && window.showFavoritesOnly) return 2; // 收藏列表
-            if (listExpanded) return 3; // 常规播放列表
-            return 4; // 空状态
+    //歌词在主界面的显示，该部分的可见性暴露给了Qbottom空白区域
+    ColumnLayout {
+        id: controlPanel
+        anchors.top: rec.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        visible: controlPanelVisible
+        spacing: 10
+
+        TabBar {
+            id: tabBar
+            Layout.fillWidth: true
+            TabButton { text: "歌词视图" }
+            TabButton { text: "滚动模式" }
         }
 
-        // 控制面板（歌词视图）
-        ColumnLayout {
+        StackLayout {
+            id: stackLayout
             Layout.fillWidth: true
             Layout.fillHeight: true
-            spacing: 10
+            currentIndex: tabBar.currentIndex
 
-            TabBar {
-                id: tabBar
-                Layout.fillWidth: true
-                TabButton { text: "歌词视图" }
-                TabButton { text: "滚动模式" }
+            // 歌词视图
+            Item {
+                // 歌词列表视图
+                ListView {
+                    id: parsedLyricView
+                    anchors.fill: parent
+                    model: lyricModel
+                    spacing: 5
+                    clip: true
+                    preferredHighlightBegin: height * 0.4
+                    preferredHighlightEnd: height * 0.6
+                    highlightRangeMode: ListView.StrictlyEnforceRange
+                    highlightMoveDuration: 250
+                    currentIndex: currentLine
+
+                    delegate: Rectangle {
+                        width: parsedLyricView.width
+                        height: lyricText.implicitHeight + 20
+                        color: index === currentLine ? "#ffe485" : (index % 2 === 0 ? "#f8f8f8" : "#ffffff")
+                        radius: 3
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 15
+
+                            Label {
+                                text: formatTime(model.time)
+                                font.bold: true
+                                color: "#555555"
+                                Layout.preferredWidth: 80
+                            }
+
+                            Label {
+                                id: lyricText
+                                text: model.text
+                                wrapMode: Text.Wrap
+                                Layout.fillWidth: true
+                                font.pixelSize: index === currentLine ? 18 : 14
+                                font.bold: index === currentLine
+                                color: index === currentLine ? "#bd6f1a" : "#333333"
+                            }
+                        }
+                    }
+                    ScrollBar.vertical: ScrollBar {}
+                }
+
+                // 无歌词提示（居中显示）
+                Label {
+                    id: noLyricLabel
+                    anchors.centerIn: parent
+                    text: "该音乐为纯音乐，无歌词内容"
+                    font.pixelSize: 24
+                    color: "#AAAAAA"
+                    visible: lyricModel.count === 0  // 没有歌词时显示
+                }
             }
 
-            StackLayout {
-                id: stackLayout
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                currentIndex: tabBar.currentIndex
+            // 滚动模式视图
+            Item {
+                Rectangle {
+                    color: "#222222"
+                    anchors.fill: parent
 
-                // 歌词视图
-                Item {
-                    // 歌词列表视图
+                    Image {
+                        id: name
+                        source: "qrc:/image/background2.jpg"
+                        sourceSize: Qt.size(200,200)
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                            left: parent.left
+                            leftMargin: 20
+                        }
+
+                        RotationAnimation on rotation {
+                            from: 0
+                            to: 360
+                            duration: 20000
+                            loops: Animation.Infinite
+                            running: true
+                        }
+                    }
+
+                    // 卡拉OK歌词视图
                     ListView {
-                        id: parsedLyricView
+                        id: karaokeView
                         anchors.fill: parent
-                        model: lyricModel
-                        spacing: 5
+                        anchors.margins: 20
+                        spacing: 15
                         clip: true
+                        model: lyricModel
                         preferredHighlightBegin: height * 0.4
                         preferredHighlightEnd: height * 0.6
                         highlightRangeMode: ListView.StrictlyEnforceRange
-                        highlightMoveDuration: 250
                         currentIndex: currentLine
 
-                        delegate: Rectangle {
-                            width: parsedLyricView.width
-                            height: lyricText.implicitHeight + 20
-                            color: index === currentLine ? "#ffe485" : (index % 2 === 0 ? "#f8f8f8" : "#ffffff")
-                            radius: 3
-
-                            RowLayout {
-                                anchors.fill: parent
-                                anchors.margins: 10
-                                spacing: 15
-
-                                Label {
-                                    text: formatTime(model.time)
-                                    font.bold: true
-                                    color: "#555555"
-                                    Layout.preferredWidth: 80
-                                }
-
-                                Label {
-                                    id: lyricText
-                                    text: model.text
-                                    wrapMode: Text.Wrap
-                                    Layout.fillWidth: true
-                                    font.pixelSize: index === currentLine ? 18 : 14
-                                    font.bold: index === currentLine
-                                    color: index === currentLine ? "#bd6f1a" : "#333333"
-                                }
-                            }
+                        delegate: Label {
+                            width: karaokeView.width
+                            horizontalAlignment: Text.AlignHCenter
+                            text: model.text
+                            color: index === currentLine ? "#00BFFF" : "#AAAAAA"
+                            font.pixelSize: index === currentLine ? 28 : 18
+                            font.bold: index === currentLine
+                            opacity: index === currentLine ? 1.0 : (Math.abs(index - currentLine) < 3 ? 0.8 : 0.5)
+                            Behavior on color { ColorAnimation { duration: 200 } }
+                            Behavior on font.pixelSize { NumberAnimation { duration: 200 } }
+                            Behavior on opacity { NumberAnimation { duration: 200 } }
                         }
-                        ScrollBar.vertical: ScrollBar {}
+
+                        ScrollBar.vertical: ScrollBar {
+                            policy: ScrollBar.AlwaysOn
+                        }
                     }
 
                     // 无歌词提示（居中显示）
                     Label {
-                        id: noLyricLabel
                         anchors.centerIn: parent
                         text: "该音乐为纯音乐，无歌词内容"
-                        font.pixelSize: 24
-                        color: "#AAAAAA"
+                        font.pixelSize: 28
+                        color: "#666666"
                         visible: lyricModel.count === 0  // 没有歌词时显示
                     }
                 }
+            }
+        }
+    }
 
-                // 滚动模式视图
-                Item {
-                    Rectangle {
-                        color: "#222222"
-                        anchors.fill: parent
+    ListView {
+        id: fileListView
+        anchors {
+            top: rec.bottom  // 顶部对齐到rec的底部
+            //left: parent.left
+            right: parent.right
+            bottom: parent.bottom  // 底部对齐到父容器底部
+            margins: 10  // 添加适当边距
+        }
 
-                        Image {
-                            id: name
-                            source: "qrc:/image/background2.jpg"
-                            sourceSize: Qt.size(200,200)
-                            anchors {
-                                verticalCenter: parent.verticalCenter
-                                left: parent.left
-                                leftMargin: 20
-                            }
+        width:400
+        clip: true
+        model: folderModel
+        spacing: 5
+        visible: listExpanded
 
-                            RotationAnimation on rotation {
-                                from: 0
-                                to: 360
-                                duration: 20000
-                                loops: Animation.Infinite
-                                running: true
-                            }
-                        }
+        delegate: Rectangle {
+            id: fileDelegate
+            width: fileListView.width
+            height: 50
+            color: fileListView.currentIndex === index ? "#e0e0e0" :
+                  (currentPlayingPath === filePath ? "#d4e6f1" : "white")
+            border.color: "#d0d0d0"
+            radius: 5
+            visible: !window.showFavoritesOnly || leftRect.isFavorite(filePath)
+            property bool isHovered: false
 
-                        // 卡拉OK歌词视图
-                        ListView {
-                            id: karaokeView
-                            anchors.fill: parent
-                            anchors.margins: 20
-                            spacing: 15
-                            clip: true
-                            model: lyricModel
-                            preferredHighlightBegin: height * 0.4
-                            preferredHighlightEnd: height * 0.6
-                            highlightRangeMode: ListView.StrictlyEnforceRange
-                            currentIndex: currentLine
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 10
+                spacing: 15
 
-                            delegate: Label {
-                                width: karaokeView.width
-                                horizontalAlignment: Text.AlignHCenter
-                                text: model.text
-                                color: index === currentLine ? "#00BFFF" : "#AAAAAA"
-                                font.pixelSize: index === currentLine ? 28 : 18
-                                font.bold: index === currentLine
-                                opacity: index === currentLine ? 1.0 : (Math.abs(index - currentLine) < 3 ? 0.8 : 0.5)
-                                Behavior on color { ColorAnimation { duration: 200 } }
-                                Behavior on font.pixelSize { NumberAnimation { duration: 200 } }
-                                Behavior on opacity { NumberAnimation { duration: 200 } }
-                            }
+                ColumnLayout {
+                    spacing: 5
 
-                            ScrollBar.vertical: ScrollBar {
-                                policy: ScrollBar.AlwaysOn
-                            }
-                        }
-
-                        // 无歌词提示（居中显示）
-                        Label {
-                            anchors.centerIn: parent
-                            text: "该音乐为纯音乐，无歌词内容"
-                            font.pixelSize: 28
-                            color: "#666666"
-                            visible: lyricModel.count === 0  // 没有歌词时显示
-                        }
+                    Label {
+                        text: fileName
+                        font.bold: true
+                        elide: Text.ElideRight
+                        color: currentPlayingPath === filePath ? "blue" : "black"
                     }
+
+                    Label {
+                        text: formatFilePath(filePath)
+                        color: "gray"
+                        font.pixelSize: 12
+                        elide: Text.ElideLeft
+                    }
+                }
+
+                Item { Layout.fillWidth: true }
+
+                // 收藏图标
+                Image {
+                    anchors {
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                        rightMargin: 10
+                    }
+                    width: 20
+                    height: 20
+                    source: leftRect.isFavorite(filePath) ?
+                            "qrc:/image/full-love.png" :
+                            "qrc:/image/love.png"
+                }
+            }
+
+            HoverHandler {
+                id: love
+                onHoveredChanged: fileDelegate.isHovered = hovered
+            }
+
+            TapHandler {
+                acceptedButtons: Qt.LeftButton
+                onTapped: {
+                    fileListView.currentIndex = index
+                    playMusic(filePath)
+                    window.currentPlayingPath = filePath
+                    const lrcPath = filePath.replace(/\.mp3$/, ".lrc")
+                    lrcReader.readFile(lrcPath)
+                }
+                onDoubleTapped: {
+                    playMusic(filePath)
+                    window.currentPlayingPath = filePath
+                    const lrcPath = filePath.replace(/\.mp3$/, ".lrc")
+                    lrcReader.readFile(lrcPath)
+                }
+            }
+
+            states: State {
+                when: fileDelegate.isHovered
+                PropertyChanges {
+                    target: fileDelegate
+                    color: fileListView.currentIndex === index ? "#e0e0e0" : "#f5f5f5"
                 }
             }
         }
 
-        // 最近播放列表
-        ListView {
-            id: recentSongsView
-            clip: true
-            spacing: 5
-            model: leftRect.recentSongs
+        ScrollBar.vertical: ScrollBar {}
+    }
 
-            delegate: Rectangle {
-                id: recentDelegate
-                width: recentSongsView.width
-                height: 50
-                color: recentSongsView.currentIndex === index ? "#e0e0e0" :
-                      (currentPlayingPath === ("file://" + modelData) ? "#d4e6f1" : "white")
-                border.color: "#d0d0d0"
-                radius: 5
-                property bool isHovered: false
+    function formatFilePath(path) {
+        return path.toString().replace("file://", "").replace(/^.*\//, "")
+    }
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    spacing: 15
-
-                    ColumnLayout {
-                        spacing: 5
-
-                        Label {
-                            text: {
-                                // 从文件路径中提取文件名
-                                const path = modelData;
-                                const lastSlash = path.lastIndexOf('/');
-                                return lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
-                            }
-                            font.bold: true
-                            elide: Text.ElideRight
-                            color: currentPlayingPath === ("file://" + modelData) ? "blue" : "black"
-                        }
-
-                        Label {
-                            text: modelData
-                            font.pixelSize: 12
-                            elide: Text.ElideLeft
-                        }
-                    }
-
-                    Item { Layout.fillWidth: true }
-
-                    // 收藏图标
-                    Image {
-                        anchors {
-                            right: parent.right
-                            verticalCenter: parent.verticalCenter
-                            rightMargin: 10
-                        }
-                        width: 20
-                        height: 20
-                        source: leftRect.isFavorite("file://" + modelData) ?
-                                "qrc:/image/full-love.png" :
-                                "qrc:/image/love.png"
-                    }
-                }
-
-                HoverHandler {
-                    id: recentHoverHandler
-                    onHoveredChanged: recentDelegate.isHovered = hovered
-                }
-
-                TapHandler {
-                    acceptedButtons: Qt.LeftButton
-                    onTapped: {
-                        recentSongsView.currentIndex = index
-                        playMusic("file://" + modelData)
-                        window.currentPlayingPath = "file://" + modelData
-                        const lrcPath = modelData.replace(/\.mp3$/, ".lrc")
-                        lrcReader.readFile(lrcPath)
-                    }
-                    onDoubleTapped: {
-                        playMusic("file://" + modelData)
-                        window.currentPlayingPath = "file://" + modelData
-                        const lrcPath = modelData.replace(/\.mp3$/, ".lrc")
-                        lrcReader.readFile(lrcPath)
-                    }
-                }
-
-                states: State {
-                    when: recentDelegate.isHovered
-                    PropertyChanges {
-                        target: recentDelegate
-                        color: recentSongsView.currentIndex === index ? "#e0e0e0" : "#f5f5f5"
-                    }
-                }
-            }
-
-            ScrollBar.vertical: ScrollBar {}
-        }
-
-        // 收藏列表
-        ListView {
-            id: favoriteListView
-            clip: true
-            spacing: 5
-            model: folderModel
-
-            delegate: Rectangle {
-                id: fileDelegate
-                width: favoriteListView.width
-                height: 50
-                color: favoriteListView.currentIndex === index ? "#e0e0e0" :
-                      (currentPlayingPath === filePath ? "#d4e6f1" : "white")
-                border.color: "#d0d0d0"
-                radius: 5
-                // 只显示收藏的歌曲
-                visible: window.showFavoritesOnly && leftRect.isFavorite(filePath)
-                property bool isHovered: false
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    spacing: 15
-
-                    ColumnLayout {
-                        spacing: 5
-
-                        Label {
-                            text: fileName
-                            font.bold: true
-                            elide: Text.ElideRight
-                            color: currentPlayingPath === filePath ? "blue" : "black"
-                        }
-
-                        Label {
-                            text: funct.formatFilePath(filePath)
-                            font.pixelSize: 12
-                            elide: Text.ElideLeft
-                        }
-                    }
-
-                    Item { Layout.fillWidth: true }
-
-                    // 收藏图标
-                    Image {
-                        anchors {
-                            right: parent.right
-                            verticalCenter: parent.verticalCenter
-                            rightMargin: 10
-                        }
-                        width: 20
-                        height: 20
-                        source: leftRect.isFavorite(filePath) ?
-                                "qrc:/image/full-love.png" :
-                                "qrc:/image/love.png"
-                    }
-                }
-
-                HoverHandler {
-                    id: hoverHandler
-                    onHoveredChanged: fileDelegate.isHovered = hovered
-                }
-
-                TapHandler {
-                    acceptedButtons: Qt.LeftButton
-                    onTapped: {
-                        favoriteListView.currentIndex = index
-                        playMusic(filePath)
-                        window.currentPlayingPath = filePath
-                        const lrcPath = filePath.replace(/\.mp3$/, ".lrc")
-                        lrcReader.readFile(lrcPath)
-                    }
-                    onDoubleTapped: {
-                        playMusic(filePath)
-                        window.currentPlayingPath = filePath
-                        const lrcPath = filePath.replace(/\.mp3$/, ".lrc")
-                        lrcReader.readFile(lrcPath)
-                    }
-                }
-
-                states: State {
-                    when: fileDelegate.isHovered
-                    PropertyChanges {
-                        target: fileDelegate
-                        color: favoriteListView.currentIndex === index ? "#e0e0e0" : "#f5f5f5"
-                    }
-                }
-            }
-
-            ScrollBar.vertical: ScrollBar {}
-        }
-
-        // 常规播放列表
-        ListView {
-            id: fileListView
-            clip: true
-            spacing: 5
-            model: folderModel
-
-            delegate: Rectangle {
-                id: fileDelegate
-                width: fileListView.width
-                height: 50
-                color: fileListView.currentIndex === index ? "#e0e0e0" :
-                      (currentPlayingPath === filePath ? "#d4e6f1" : "white")
-                border.color: "#d0d0d0"
-                radius: 5
-                property bool isHovered: false
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: 10
-                    spacing: 15
-
-                    ColumnLayout {
-                        spacing: 5
-
-                        Label {
-                            text: fileName
-                            font.bold: true
-                            elide: Text.ElideRight
-                            color: currentPlayingPath === filePath ? "blue" : "black"
-                        }
-
-                        Label {
-                            text: funct.formatFilePath(filePath)
-                            font.pixelSize: 12
-                            elide: Text.ElideLeft
-                        }
-                    }
-
-                    Item { Layout.fillWidth: true }
-
-                    // 收藏图标
-                    Image {
-                        anchors {
-                            right: parent.right
-                            verticalCenter: parent.verticalCenter
-                            rightMargin: 10
-                        }
-                        width: 20
-                        height: 20
-                        source: leftRect.isFavorite(filePath) ?
-                                "qrc:/image/full-love.png" :
-                                "qrc:/image/love.png"
-                    }
-                }
-
-                HoverHandler {
-                    id: hoverHandler
-                    onHoveredChanged: fileDelegate.isHovered = hovered
-                }
-
-                TapHandler {
-                    acceptedButtons: Qt.LeftButton
-                    onTapped: {
-                        fileListView.currentIndex = index
-                        playMusic(filePath)
-                        window.currentPlayingPath = filePath
-                        const lrcPath = filePath.replace(/\.mp3$/, ".lrc")
-                        lrcReader.readFile(lrcPath)
-                    }
-                    onDoubleTapped: {
-                        playMusic(filePath)
-                        window.currentPlayingPath = filePath
-                        const lrcPath = filePath.replace(/\.mp3$/, ".lrc")
-                        lrcReader.readFile(lrcPath)
-                    }
-                }
-
-                states: State {
-                    when: fileDelegate.isHovered
-                    PropertyChanges {
-                        target: fileDelegate
-                        color: fileListView.currentIndex === index ? "#e0e0e0" : "#f5f5f5"
-                    }
-                }
-            }
-
-            ScrollBar.vertical: ScrollBar {}
-        }
-
-        // 空状态（当列表和控制面板都不可见时）
-        Item {}
+    // 页面加载时加载搜索历史
+    Component.onCompleted: {
+        initDatabase();
+        loadSearchHistory();
+        folderModel.setNameFilters(["*.mp3", "*.MP3"]); // 兼容大小写
+        folderModel.setRootPath("qrc:/music");
     }
 }

@@ -5,6 +5,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Shapes
+import Qt.labs.platform
+import QtMultimedia
 
 Rectangle {
     id: leftRect
@@ -39,86 +41,149 @@ Rectangle {
     }
 
     property bool isNarrow: false
+    property bool isLoggedIn: false
+    property string userName: "未登录用户"
+    property var favoriteSongs: []
+    property var recentSongs: [] // 最近播放列表
+    property var localSongs: []  // 本地音乐列表
+
+    // 信号
+    signal showFavoriteSongs()
+    signal showRecentSongs()
+    signal showLocalSongs()
+    signal showSettings()
 
     function toggleZoom() {
         isNarrow = !isNarrow;
         state = isNarrow ? "narrow" : "wide";
     }
 
-    property var favoriteSongs: []
-    property var recentSongs: [] // 存储最近播放的歌曲路径
-
-    // 保存最近播放列表到设置
-    function saveRecentSongs() {
-        try {
-            Qt.application.settings.setValue("recentSongs", JSON.stringify(recentSongs));
-        } catch (e) {
-            console.error("保存最近播放列表失败:", e);
-        }
+    // 模拟登录
+    function login() {
+        isLoggedIn = true;
+        userName = "音乐爱好者";
+        loginButton.text = userName;
+        // 加载用户数据
+        loadUserData();
     }
 
-    // 添加歌曲到最近播放列表
-    function addToRecent(filePath) {
-        const normalizedPath = filePath.replace("file://", "");
-
-        // 如果歌曲已在列表中，先移除它
-        const index = recentSongs.indexOf(normalizedPath);
-        if (index >= 0) {
-            recentSongs.splice(index, 1);
-        }
-
-        // 添加到列表开头
-        recentSongs.unshift(normalizedPath);
-
-        // 限制列表长度（例如最多50首）
-        if (recentSongs.length > 50) {
-            recentSongs.pop();
-        }
-
-        saveRecentSongs();
-        recentSongsChanged();
-    }
-
-    Component.onCompleted: {
+    // 加载用户数据
+    function loadUserData() {
         try {
+            const savedFavorites = Qt.application.settings.value("favorites");
+            if (savedFavorites) {
+                favoriteSongs = JSON.parse(savedFavorites);
+            }
+
             const savedRecent = Qt.application.settings.value("recentSongs");
             if (savedRecent) {
                 recentSongs = JSON.parse(savedRecent);
             }
+
+            const savedLocal = Qt.application.settings.value("localSongs");
+            if (savedLocal) {
+                localSongs = JSON.parse(savedLocal);
+            }
         } catch (e) {
-            console.error("加载最近播放列表失败:", e);
+            console.error("加载用户数据失败:", e);
         }
     }
 
-    function saveFavorites() {
+    // 保存用户数据
+    function saveUserData() {
         try {
             Qt.application.settings.setValue("favorites", JSON.stringify(favoriteSongs));
+            Qt.application.settings.setValue("recentSongs", JSON.stringify(recentSongs));
+            Qt.application.settings.setValue("localSongs", JSON.stringify(localSongs));
         } catch (e) {
-            console.error("保存收藏列表失败:", e);
+            console.error("保存用户数据失败:", e);
         }
     }
 
+    // 添加收藏
     function addFavorite(filePath) {
         const normalizedPath = filePath.replace("file://", "");
         if (!favoriteSongs.includes(normalizedPath)) {
             favoriteSongs.push(normalizedPath);
-            saveFavorites();
+            saveUserData();
             console.log("已添加到收藏:", normalizedPath);
         }
-        console.log("添加收藏:", normalizedPath)
         favoriteSongsChanged()
     }
 
+    // 移除收藏
     function removeFavorite(filePath) {
         const normalizedPath = filePath.replace("file://", "");
         const index = favoriteSongs.indexOf(normalizedPath);
         if (index >= 0) {
             favoriteSongs.splice(index, 1);
-            saveFavorites();
+            saveUserData();
             console.log("已从收藏移除:", normalizedPath);
         }
-        console.log("移除收藏:", normalizedPath)
         favoriteSongsChanged()
+    }
+
+    // 添加最近播放
+    function addRecentSong(filePath) {
+        const normalizedPath = filePath.replace("file://", "");
+
+        // 移除已存在的相同歌曲
+        const index = recentSongs.indexOf(normalizedPath);
+        if (index >= 0) {
+            recentSongs.splice(index, 1);
+        }
+
+        // 添加到开头
+        recentSongs.unshift(normalizedPath);
+
+        // 限制最多保存20首
+        if (recentSongs.length > 20) {
+            recentSongs = recentSongs.slice(0, 20);
+        }
+
+        saveUserData();
+    }
+
+    // 添加本地音乐
+    function addLocalSong(filePath) {
+        const normalizedPath = filePath.replace("file://", "");
+
+        // 检查是否已存在
+        if (!localSongs.includes(normalizedPath)) {
+            localSongs.push(normalizedPath);
+            saveUserData();
+            console.log("已添加到本地音乐:", normalizedPath);
+        }
+    }
+
+    // 浏览添加本地音乐
+    function browseLocalMusic() {
+        fileDialog.open();
+    }
+
+    // 文件对话框
+    FileDialog {
+        id: fileDialog
+        title: "选择音乐文件"
+        nameFilters: ["MP3文件 (*.mp3)"]
+        onAccepted: {
+            for (var i = 0; i < fileDialog.files.length; i++) {
+                const filePath = fileDialog.files[i].toString();
+                addLocalSong(filePath);
+            }
+            showLocalSongs();
+        }
+    }
+
+    Component.onCompleted: {
+        try {
+            const savedFavorites = Qt.application.settings.value("favorites");
+            if (savedFavorites) {
+                favoriteSongs = JSON.parse(savedFavorites);
+            }
+        } catch (e) {
+            console.error("加载收藏列表失败:", e);
+        }
     }
 
     ColumnLayout {
@@ -146,10 +211,15 @@ Rectangle {
 
             Button {
                 id: loginButton
-                text: qsTr("点击登陆")
+                text: isLoggedIn ? userName : qsTr("点击登录")
                 width: 100
                 height: 44
                 visible: true
+                onClicked: {
+                    if (!isLoggedIn) {
+                        login();
+                    }
+                }
             }
         }
 
@@ -304,7 +374,10 @@ Rectangle {
                 TapHandler {
                     id: favoriteTap
                     gesturePolicy: TapHandler.ReleaseWithinBounds
-                    onTapped: console.log("我的喜欢")
+                    onTapped: {
+                        console.log("我的喜欢");
+                        showFavoriteSongs();
+                    }
                 }
             }
 
@@ -347,9 +420,8 @@ Rectangle {
                     id: recentTap
                     gesturePolicy: TapHandler.ReleaseWithinBounds
                     onTapped: {
-                        console.log("显示最近播放列表");
-                        // 发送信号通知主窗口显示最近播放列表
-                        parent.showRecentSongs();
+                        console.log("我的最近播放");
+                        showRecentSongs();
                     }
                 }
             }
@@ -392,7 +464,10 @@ Rectangle {
                 TapHandler {
                     id: downloadTap
                     gesturePolicy: TapHandler.ReleaseWithinBounds
-                    onTapped: console.log("我的本地下载")
+                    onTapped: {
+                        console.log("我的本地下载");
+                        browseLocalMusic();
+                    }
                 }
             }
 
@@ -453,7 +528,10 @@ Rectangle {
                 TapHandler {
                     id: settingTap
                     gesturePolicy: TapHandler.ReleaseWithinBounds
-                    onTapped: console.log("设置按钮点击")
+                    onTapped: {
+                        console.log("设置按钮点击");
+                        showSettings();
+                    }
                 }
             }
 
